@@ -12,5 +12,7 @@ namespace MigrationDemo.Entities
         public virtual DbSet<DbInvestmentAgreement> InvestmentAgreements { get; set; }
 
         public virtual DbSet<DbProfile> Profiles { get; set; }
+
+        public virtual DbSet<DbProduct> Products { get; set; }
     }
 }

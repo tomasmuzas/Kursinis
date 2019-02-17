@@ -2,11 +2,13 @@
 
 namespace MigrationDemo.Entities
 {
-    public class DbInvestmentAgreement
+    public class DbProduct
     {
         [Key]
         public int Id { get; set; }
 
-        public DbProduct Product { get; set; }
+        public string Name { get; set; }
+
+        public string Isin { get; set; }
     }
 }
