@@ -1,16 +1,18 @@
+using MigrationDemo.Entities;
+
 namespace MigrationDemo.Migrations
 {
     using System.Data.Entity.Migrations;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<MigrationDemo.Entities.DatabaseContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<DatabaseContext>
     {
         public Configuration()
         {
-            AutomaticMigrationsEnabled = false;
+            AutomaticMigrationsEnabled = true;
         }
 
         // TODO: Will change in EF Core
-        protected override void Seed(MigrationDemo.Entities.DatabaseContext context)
+        protected override void Seed(DatabaseContext context)
         {
         }
     }
