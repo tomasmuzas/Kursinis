@@ -137,12 +137,17 @@
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Entities\InvestmentAgreement.cs" />
     <Compile Include="Entities\DatabaseContext.cs" />
+    <Compile Include="Entities\DbProfile.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201902171501483_Initial.cs" />
     <Compile Include="Migrations\201902171501483_Initial.Designer.cs">
       <DependentUpon>201902171501483_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902171514153_AddProfiles.cs" />
+    <Compile Include="Migrations\201902171514153_AddProfiles.Designer.cs">
+      <DependentUpon>201902171514153_AddProfiles.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -165,6 +170,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201902171501483_Initial.resx">
       <DependentUpon>201902171501483_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902171514153_AddProfiles.resx">
+      <DependentUpon>201902171514153_AddProfiles.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
