@@ -45,9 +45,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.2.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -127,15 +134,41 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\InvestmentAgreements\InvestmentAgreementsController.cs" />
+    <Compile Include="Controllers\Profiles\ProfileController.cs" />
+    <Compile Include="Controllers\Profiles\ProfileDataJson.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
+    <Compile Include="Entities\DbProduct.cs" />
+    <Compile Include="Entities\InvestmentAgreement.cs" />
+    <Compile Include="Entities\DatabaseContext.cs" />
+    <Compile Include="Entities\DbProfile.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902171501483_Initial.cs" />
+    <Compile Include="Migrations\201902171501483_Initial.Designer.cs">
+      <DependentUpon>201902171501483_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902171514153_AddProfiles.cs" />
+    <Compile Include="Migrations\201902171514153_AddProfiles.Designer.cs">
+      <DependentUpon>201902171514153_AddProfiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902171515475_RenameProfileTable.cs" />
+    <Compile Include="Migrations\201902171515475_RenameProfileTable.Designer.cs">
+      <DependentUpon>201902171515475_RenameProfileTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902171950231_AddProducts.cs" />
+    <Compile Include="Migrations\201902171950231_AddProducts.Designer.cs">
+      <DependentUpon>201902171950231_AddProducts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -144,10 +177,21 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Models\" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <EmbeddedResource Include="Migrations\201902171501483_Initial.resx">
+      <DependentUpon>201902171501483_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902171514153_AddProfiles.resx">
+      <DependentUpon>201902171514153_AddProfiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902171515475_RenameProfileTable.resx">
+      <DependentUpon>201902171515475_RenameProfileTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902171950231_AddProducts.resx">
+      <DependentUpon>201902171950231_AddProducts.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
