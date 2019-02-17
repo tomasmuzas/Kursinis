@@ -134,6 +134,10 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Controllers\InvestmentAgreements\InvestmentAgreementsController.cs" />
+    <Compile Include="Controllers\InvestmentAgreements\AgreementDataJson.cs" />
+    <Compile Include="Controllers\Profiles\ProfileController.cs" />
+    <Compile Include="Controllers\Profiles\ProfileDataJson.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Entities\InvestmentAgreement.cs" />
     <Compile Include="Entities\DatabaseContext.cs" />
@@ -148,6 +152,10 @@
     <Compile Include="Migrations\201902171514153_AddProfiles.cs" />
     <Compile Include="Migrations\201902171514153_AddProfiles.Designer.cs">
       <DependentUpon>201902171514153_AddProfiles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902171515475_RenameProfileTable.cs" />
+    <Compile Include="Migrations\201902171515475_RenameProfileTable.Designer.cs">
+      <DependentUpon>201902171515475_RenameProfileTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -173,6 +181,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902171514153_AddProfiles.resx">
       <DependentUpon>201902171514153_AddProfiles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902171515475_RenameProfileTable.resx">
+      <DependentUpon>201902171515475_RenameProfileTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

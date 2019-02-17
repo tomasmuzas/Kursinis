@@ -14,6 +14,6 @@ namespace MigrationDemo.Entities
 
         public string Email { get; set; }
 
-        public List<DbInvestmentAgreement> InvestmentAgreements { get; set; }
+        public List<DbInvestmentAgreement> InvestmentAgreements { get; set; } = new List<DbInvestmentAgreement>();
     }
 }
