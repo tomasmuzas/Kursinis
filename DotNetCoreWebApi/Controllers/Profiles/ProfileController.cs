@@ -1,24 +1,31 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DotNetCoreWebApi.Entities;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreWebApi.Controllers.Profiles
 {
     [Route("api/profiles")]
     public class ProfileController : ControllerBase
     {
-        private readonly DatabaseContext db = new DatabaseContext();
-        
+        private readonly DatabaseContext db;
+
+        public ProfileController(DatabaseContext db)
+        {
+            this.db = db;
+        }
+
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok(await db.Profiles.ToListAsync());
+            return Ok(await db.DbProfiles.Include(p => p.InvestmentAgreements).ToListAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get([FromQuery]int id)
         {
-            var profile = await db.Profiles.Where(p => p.Id == id).SingleAsync();
+            var profile = await db.DbProfiles.Where(p => p.Id == id).SingleAsync();
             return Ok(profile);
         }
         
@@ -32,7 +39,7 @@ namespace DotNetCoreWebApi.Controllers.Profiles
                 Email = data.Email
             };
 
-            db.Profiles.Add(profile);
+            db.DbProfiles.Add(profile);
 
             await db.SaveChangesAsync();
         }
