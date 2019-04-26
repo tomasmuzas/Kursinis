@@ -26,18 +26,17 @@ namespace SolutionDllLoadTest
 
             foreach (var entityType in entityTypes)
             {
-
                 Console.WriteLine("Entity:");
                 Console.WriteLine(entityType.ToString());
                 Console.WriteLine("Table name:");
-                Console.WriteLine(metadata.GetTableName(entityType));
+                Console.WriteLine(metadata.GetTableInfo(entityType).Name);
                 Console.WriteLine("Keys:");
                 Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityType)));
                 Console.WriteLine("Foreign Keys:");
                 var foreignKeys = metadata.GetForeignKeys(entityType);
                 foreach (var foreignKey in foreignKeys)
                 {
-                    Console.WriteLine($"{metadata.GetTableName(foreignKey.FromEntity)}.{foreignKey.FromColumn} -> {metadata.GetTableName(foreignKey.ToEntity)}.{foreignKey.ToColumn}");
+                    Console.WriteLine($"{metadata.GetTableInfo(foreignKey.FromEntity).Name}.{foreignKey.FromColumn} -> {metadata.GetTableInfo(foreignKey.ToEntity).Name}.{foreignKey.ToColumn}");
                 }
                 Console.WriteLine();
             }

@@ -30,37 +30,41 @@ namespace SolutionDllLoadTest.Extensions
                 .SingleOrDefault(t => t.Name == entityName);
         }
 
-        public static string GetTableName(this MetadataWorkspace metadata, Type entityType)
+        public static TableInfo GetTableInfo(this MetadataWorkspace metadata, Type entityType)
         {
-                // Get the part of the model that contains info about the actual CLR types
-                var objectItemCollection = ((ObjectItemCollection)metadata.GetItemCollection(DataSpace.OSpace));
+            // Get the part of the model that contains info about the actual CLR types
+            var objectItemCollection = ((ObjectItemCollection)metadata.GetItemCollection(DataSpace.OSpace));
 
-                // Get the entity type from the model that maps to the CLR type
-                var entityClrType = metadata
-                    .GetItems<EntityType>(DataSpace.OSpace)
-                    .Single(e => objectItemCollection.GetClrType(e) == entityType);
+            // Get the entity type from the model that maps to the CLR type
+            var entityClrType = metadata
+                .GetItems<EntityType>(DataSpace.OSpace)
+                .Single(e => objectItemCollection.GetClrType(e) == entityType);
 
-                // Get the entity set that uses this entity type
-                var entitySet = metadata
-                    .GetItems<EntityContainer>(DataSpace.CSpace)
-                    .Single()
-                    .EntitySets
-                    .Single(s => s.ElementType.Name == entityClrType.Name);
+            // Get the entity set that uses this entity type
+            var entitySet = metadata
+                .GetItems<EntityContainer>(DataSpace.CSpace)
+                .Single()
+                .EntitySets
+                .Single(s => s.ElementType.Name == entityClrType.Name);
 
-                // Find the mapping between conceptual and storage model for this entity set
-                var mapping = metadata.GetItems<EntityContainerMapping>(DataSpace.CSSpace)
-                    .Single()
-                    .EntitySetMappings
-                    .Single(s => s.EntitySet == entitySet);
+            // Find the mapping between conceptual and storage model for this entity set
+            var mapping = metadata.GetItems<EntityContainerMapping>(DataSpace.CSSpace)
+                .Single()
+                .EntitySetMappings
+                .Single(s => s.EntitySet == entitySet);
 
-                // Find the storage entity set (table) that the entity is mapped
-                var table = mapping
-                    .EntityTypeMappings.Single()
-                    .Fragments.Single()
-                    .StoreEntitySet;
+            // Find the storage entity set (table) that the entity is mapped
+            var table = mapping
+                .EntityTypeMappings.Single()
+                .Fragments.Single()
+                .StoreEntitySet;
 
-                // Return the table name from the storage entity set
-                return (string)table.MetadataProperties["Schema"].Value + "." + (string)table.MetadataProperties["Table"].Value /*?? table.Schema + "." + table.Name*/;
+            // Return the table name from the storage entity set
+            return new TableInfo
+            {
+                Schema = (string)table.MetadataProperties["Schema"].Value,
+                Name = (string)table.MetadataProperties["Table"].Value
+            };
         }
 
         public static string[] GetKeyNames(this MetadataWorkspace metadata, Type entityType)
@@ -78,7 +82,7 @@ namespace SolutionDllLoadTest.Extensions
 
         public static IEnumerable<ForeignKey> GetForeignKeys(this MetadataWorkspace metadata, Type entityType)
         {
-            var fk = metadata
+            var foreignKeys = metadata
                 .GetItems<AssociationType>(DataSpace.SSpace)
                 .SelectMany(a => a.ReferentialConstraints)
                 .Where(rc => rc.ToRole.Name == entityType.Name)
@@ -88,9 +92,9 @@ namespace SolutionDllLoadTest.Extensions
                     FromColumn = rc.ToProperties[0].Name,
                     ToEntity = metadata.GetTypeFromName(rc.FromRole.Name),
                     ToColumn = rc.FromProperties[0].Name
-                })
-                .ToList();
-            return fk;
+                });
+
+            return foreignKeys;
         }
     }
 }
