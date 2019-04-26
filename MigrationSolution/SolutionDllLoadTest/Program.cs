@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Reflection;
 using SolutionDllLoadTest.Extensions;
+using SolutionDllLoadTest.QueryGenerators;
 
 namespace SolutionDllLoadTest
 {
@@ -22,7 +22,7 @@ namespace SolutionDllLoadTest
 
             var entityTypes = metadata.GetEntityTypes();
 
-            // FOREIGN KEY USES PATTERN UNDERNEATH, UNLESS NAME IS PROVIDED
+            var generator = new SqlServerQueryGenerator();
 
             foreach (var entityType in entityTypes)
             {
@@ -34,9 +34,17 @@ namespace SolutionDllLoadTest
                 Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityType)));
                 Console.WriteLine("Foreign Keys:");
                 var foreignKeys = metadata.GetForeignKeys(entityType);
+                
                 foreach (var foreignKey in foreignKeys)
                 {
-                    Console.WriteLine($"{metadata.GetTableInfo(foreignKey.FromEntity).Name}.{foreignKey.FromColumn} -> {metadata.GetTableInfo(foreignKey.ToEntity).Name}.{foreignKey.ToColumn}");
+                    var fromTableInfo = metadata.GetTableInfo(foreignKey.FromEntity);
+                    var toTableInfo = metadata.GetTableInfo(foreignKey.ToEntity);
+                    var fkQuery = generator.GenerateForeignKeysQuery(fromTableInfo.Schema, fromTableInfo.Name, foreignKey.FromColumn, toTableInfo.Name, foreignKey.ToColumn);
+                    var fk = dbContextInstance.Database.SqlQuery<string>(fkQuery).SingleOrDefault();
+                    if (fk != null)
+                    {
+                        Console.WriteLine(fk);
+                    }
                 }
                 Console.WriteLine();
             }
