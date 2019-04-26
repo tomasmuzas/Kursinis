@@ -1,3 +1,7 @@
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+
 namespace MigrationDemo.Entities
 {
     using System.Data.Entity;
@@ -5,7 +9,7 @@ namespace MigrationDemo.Entities
     public class DatabaseContext : DbContext
     {
         public DatabaseContext()
-            : base("name=DatabaseContext")
+            : base("data source=(LocalDb)\\MSSQLLocalDB;integrated security=True;")
         {
         }
 
