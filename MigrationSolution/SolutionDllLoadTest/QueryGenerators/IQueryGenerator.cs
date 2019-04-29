@@ -2,7 +2,12 @@
 {
     public interface IQueryGenerator
     {
-        string GenerateGetAllForeignKeysForTableQuery(string schema, string fromTableName, string fromColumn, string toTableName, string toColumn);
+        string GenerateGetAllForeignKeysForTableQuery(
+            string schema, 
+            string fromTableName, 
+            string fromColumn, 
+            string toTableName, 
+            string toColumn);
 
         string GenerateForeignKeyRenameQuery(
             string originalForeignKeyName, 

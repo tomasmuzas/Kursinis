@@ -54,6 +54,8 @@
     <Compile Include="Extensions\MetadataExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryGenerators\IQueryGenerator.cs" />
+    <Compile Include="RelationshipDTOs\EntityInformation.cs" />
     <Compile Include="RelationshipDTOs\ForeignKey.cs" />
     <Compile Include="RelationshipDTOs\TableInfo.cs" />
     <Compile Include="QueryGenerators\SqlServerQueryGenerator.cs" />

@@ -20,20 +20,20 @@ namespace SolutionDllLoadTest
 
             var metadata = dbContextInstance.GetMetadata();
 
-            var entityTypes = metadata.GetEntityTypes();
+            var entitiesInfo = metadata.GetEntitiesInformation();
 
             IQueryGenerator generator = new SqlServerQueryGenerator();
 
-            foreach (var entityType in entityTypes)
+            foreach (var entityInformation in entitiesInfo)
             {
                 Console.WriteLine("Entity:");
-                Console.WriteLine(entityType.ToString());
+                Console.WriteLine(entityInformation.ClrType.Name);
                 Console.WriteLine("Table name:");
-                Console.WriteLine(metadata.GetTableInfo(entityType).Name);
-                Console.WriteLine("Keys:");
-                Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityType)));
+                Console.WriteLine(entityInformation.TableInformation.Name);
+                //Console.WriteLine("Keys:");
+                //Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityType)));
                 Console.WriteLine("Foreign Keys:");
-                var foreignKeys = metadata.GetForeignKeys(entityType);
+                var foreignKeys = entityInformation.ForeignKeys;
 
                 foreach (var foreignKey in foreignKeys)
                 {

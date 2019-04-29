@@ -9,6 +9,20 @@ namespace SolutionDllLoadTest.Extensions
 {
     public static class MetadataExtensions
     {
+        public static IEnumerable<EntityInformation> GetEntitiesInformation(this MetadataWorkspace metadata)
+        {
+            var entityTypes = metadata.GetEntityTypes();
+
+            var entityInfo = entityTypes.Select(t => new EntityInformation
+            {
+                ClrType = t,
+                ForeignKeys = metadata.GetForeignKeys(t),
+                TableInformation = metadata.GetTableInfo(t)
+            });
+
+            return entityInfo;
+        }
+
         public static IEnumerable<Type> GetEntityTypes(this MetadataWorkspace metadata)
         {
             var objectItemCollection = ((ObjectItemCollection)metadata.GetItemCollection(DataSpace.OSpace));
