@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace SolutionDllLoadTest.SqlHelpers
 {
-    public class SqlServerHelper
+    public class SqlServerHelper : ISqlHelper
     {
-        public IEnumerable<ForeignKeyInfo> GetForeignKeyInformation(
+        public IEnumerable<DatabaseForeignKeyInfo> GetForeignKeyInformation(
             DbContext databaseContext,
             string schema,
             string fromTableName)
         {
             var query = 
-                $@"SELECT  obj.name AS [DatabaseName],
+                $@"SELECT  obj.name AS [Name],
                     sch.name AS [Schema],
                     tab1.name AS [FromTable],
                     col1.name AS [FromColumn],
@@ -35,7 +35,7 @@ namespace SolutionDllLoadTest.SqlHelpers
                     AND tab1.name = '{fromTableName}'";
 
             return databaseContext.Database
-                .SqlQuery<ForeignKeyInfo>(query)
+                .SqlQuery<DatabaseForeignKeyInfo>(query)
                 .ToList();
         }
     }

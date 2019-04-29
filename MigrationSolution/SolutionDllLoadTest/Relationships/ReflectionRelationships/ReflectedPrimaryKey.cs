@@ -1,6 +1,6 @@
-﻿namespace SolutionDllLoadTest.Relationships
+﻿namespace SolutionDllLoadTest.Relationships.ReflectionRelationships
 {
-    public class PrimaryKey
+    public class ReflectedPrimaryKey
     {
         public string DatabaseName { get; set; }
 

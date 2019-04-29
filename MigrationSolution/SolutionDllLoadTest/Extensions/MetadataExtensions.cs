@@ -4,26 +4,12 @@ using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using SolutionDllLoadTest.Entities;
-using SolutionDllLoadTest.RelationshipDTOs;
+using SolutionDllLoadTest.Relationships.ReflectionRelationships;
 
 namespace SolutionDllLoadTest.Extensions
 {
     public static class MetadataExtensions
     {
-        public static IEnumerable<EntityInformation> GetEntitiesInformation(this MetadataWorkspace metadata)
-        {
-            var entityTypes = metadata.GetEntityTypes();
-
-            var entityInfo = entityTypes.Select(t => new EntityInformation
-            {
-                ClrType = t,
-                ForeignKeys = metadata.GetForeignKeys(t),
-                TableInformation = metadata.GetTableInfo(t)
-            });
-
-            return entityInfo;
-        }
-
         public static IEnumerable<Type> GetEntityTypes(this MetadataWorkspace metadata)
         {
             var objectItemCollection = ((ObjectItemCollection)metadata.GetItemCollection(DataSpace.OSpace));
@@ -95,21 +81,29 @@ namespace SolutionDllLoadTest.Extensions
             return entityMetadata.KeyProperties.Select(p => p.Name).ToArray();
         }
 
-        public static IEnumerable<ForeignKey> GetForeignKeys(this MetadataWorkspace metadata, Type entityType)
+        public static IEnumerable<ReflectedForeignKeyInfo> GetForeignKeys(this MetadataWorkspace metadata,
+            Type entityType)
         {
             var foreignKeys = metadata
                 .GetItems<AssociationType>(DataSpace.SSpace)
                 .SelectMany(a => a.ReferentialConstraints)
                 .Where(rc => rc.ToRole.Name == entityType.Name)
-                .Select(rc => new ForeignKey
+                .Select(rc =>
                 {
-                    FromEntity = metadata.GetTypeFromName(rc.ToRole.Name),
-                    FromColumn = rc.ToProperties[0].Name,
-                    ToEntity = metadata.GetTypeFromName(rc.FromRole.Name),
-                    ToColumn = rc.FromProperties[0].Name
+                    var fromEntity = metadata.GetTypeFromName(rc.ToRole.Name);
+                    var toEntity = metadata.GetTypeFromName(rc.FromRole.Name);
+                    return new ReflectedForeignKeyInfo
+                    {
+                        FromEntity = fromEntity,
+                        FromTable = metadata.GetTableInfo(fromEntity),
+                        FromColumn = rc.ToProperties[0].Name,
+                        ToEntity = toEntity,
+                        ToTable = metadata.GetTableInfo(toEntity), 
+                        ToColumn = rc.FromProperties[0].Name
+                    };
                 });
 
-            return foreignKeys;
+        return foreignKeys;
         }
     }
 }

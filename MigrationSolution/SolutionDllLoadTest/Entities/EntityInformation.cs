@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using SolutionDllLoadTest.RelationshipDTOs;
-using SolutionDllLoadTest.Relationships;
+using SolutionDllLoadTest.Relationships.ReflectionRelationships;
 
 namespace SolutionDllLoadTest.Entities
 {
@@ -11,7 +10,7 @@ namespace SolutionDllLoadTest.Entities
 
         public TableInfo TableInformation { get; set; }
 
-        public IEnumerable<PrimaryKey> PrimaryKeys { get; set; }
+        public IEnumerable<ReflectedPrimaryKey> PrimaryKeys { get; set; }
 
         public IEnumerable<ForeignKey> ForeignKeys { get; set; }
     }
