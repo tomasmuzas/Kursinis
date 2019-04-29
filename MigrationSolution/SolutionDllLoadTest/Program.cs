@@ -44,6 +44,7 @@ namespace SolutionDllLoadTest
                 foreach (var foreignKeyInfo in infos)
                 {
                     Console.WriteLine(generator.GenerateForeignKeyRenameQuery(
+                        foreignKeyInfo.Schema,
                         foreignKeyInfo.DatabaseName, 
                         foreignKeyInfo.FromTable, 
                         foreignKeyInfo.ToTable, 
