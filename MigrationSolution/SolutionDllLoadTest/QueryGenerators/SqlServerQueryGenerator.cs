@@ -1,8 +1,8 @@
 ﻿namespace SolutionDllLoadTest.QueryGenerators
 {
-    public class SqlServerQueryGenerator
+    public class SqlServerQueryGenerator : IQueryGenerator
     {
-        public string GenerateForeignKeysQuery(string schema, string fromTableName, string fromColumn, string toTableName, string toColumn)
+        public string GenerateGetAllForeignKeysForTableQuery(string schema, string fromTableName, string fromColumn, string toTableName, string toColumn)
         {
             return $@"SELECT  obj.name AS FK_NAME
             FROM sys.foreign_key_columns fkc
@@ -21,6 +21,15 @@
             WHERE sch.name = '{schema}' 
                 AND tab1.name = '{fromTableName}' AND col1.name = '{fromColumn}'
                 AND tab2.name = '{toTableName}' AND col2.name = '{toColumn}'";
+        }
+
+        public string GenerateForeignKeyRenameQuery(
+            string originalForeignKeyName, 
+            string fromTableName, 
+            string toTableName, 
+            string fromColumn)
+        {
+            return $"EXEC sp_rename N'{originalForeignKeyName}', N'FK_{fromTableName}_{toTableName}_{fromColumn}'";
         }
     }
 }
