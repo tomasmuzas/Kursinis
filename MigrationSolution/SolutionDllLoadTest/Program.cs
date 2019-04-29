@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using SolutionDllLoadTest.Extensions;
 using SolutionDllLoadTest.QueryGenerators;
+using SolutionDllLoadTest.SqlHelpers;
 
 namespace SolutionDllLoadTest
 {
@@ -23,9 +24,7 @@ namespace SolutionDllLoadTest
             var entitiesInfo = metadata.GetEntitiesInformation();
 
             IQueryGenerator generator = new SqlServerQueryGenerator();
-
-            dbContextInstance.Database.Connection.Open();
-            var dt = dbContextInstance.Database.Connection.GetSchema("IndexColumns");
+            var helper = new SqlServerHelper();
 
             foreach (var entityInformation in entitiesInfo)
             {
@@ -36,18 +35,19 @@ namespace SolutionDllLoadTest
                 Console.WriteLine("Keys:");
                 Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityInformation.ClrType)));
                 Console.WriteLine("Foreign Keys:");
-                var foreignKeys = entityInformation.ForeignKeys;
 
-                foreach (var foreignKey in foreignKeys)
+                var infos = helper.GetForeignKeyInformation(
+                    dbContextInstance, 
+                    entityInformation.TableInformation.Schema, 
+                    entityInformation.TableInformation.Name);
+
+                foreach (var foreignKeyInfo in infos)
                 {
-                    var fromTableInfo = metadata.GetTableInfo(foreignKey.FromEntity);
-                    var toTableInfo = metadata.GetTableInfo(foreignKey.ToEntity);
-                    var fkQuery = generator.GenerateGetAllForeignKeysForTableQuery(fromTableInfo.Schema, fromTableInfo.Name, foreignKey.FromColumn, toTableInfo.Name, foreignKey.ToColumn);
-                    var fk = dbContextInstance.Database.SqlQuery<string>(fkQuery).SingleOrDefault();
-                    if (fk != null)
-                    {
-                        Console.WriteLine(generator.GenerateForeignKeyRenameQuery(fk, fromTableInfo.Name, toTableInfo.Name, foreignKey.FromColumn));
-                    }
+                    Console.WriteLine(generator.GenerateForeignKeyRenameQuery(
+                        foreignKeyInfo.DatabaseName, 
+                        foreignKeyInfo.FromTable, 
+                        foreignKeyInfo.ToTable, 
+                        foreignKeyInfo.FromColumn));
                 }
                 Console.WriteLine();
             }

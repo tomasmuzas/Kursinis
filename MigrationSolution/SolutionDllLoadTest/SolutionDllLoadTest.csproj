@@ -60,6 +60,8 @@
     <Compile Include="Relationships\PrimaryKey.cs" />
     <Compile Include="Entities\TableInfo.cs" />
     <Compile Include="QueryGenerators\SqlServerQueryGenerator.cs" />
+    <Compile Include="SqlHelpers\ForeignKeyInfo.cs" />
+    <Compile Include="SqlHelpers\SqlServerHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
