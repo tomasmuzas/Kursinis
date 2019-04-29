@@ -17,12 +17,18 @@ namespace SolutionDllLoadTest
                 return 1; 
             }
 
+            Console.WriteLine("Loading Assembly.");
             var assembly = Assembly.LoadFrom(args[0]);
+            Console.WriteLine("Assembly loaded successfully.");
 
             IQueryGenerator generator = new SqlServerQueryGenerator();
 
             var entitiesBuilder = new EntityInformationBuilder(new SqlServerHelper(), new RelationshipMapper());
+
+            Console.WriteLine("Fetching entity information and relationships.");
             var entitiesInfo = entitiesBuilder.BuildEntityInformationFromAssembly(assembly);
+            Console.WriteLine("Entity information and relationships fetched successfully");
+
 
             foreach (var entityInformation in entitiesInfo)
             {
