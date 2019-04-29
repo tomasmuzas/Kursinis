@@ -2,7 +2,12 @@
 {
     public class SqlServerQueryGenerator : IQueryGenerator
     {
-        public string GenerateGetAllForeignKeysForTableQuery(string schema, string fromTableName, string fromColumn, string toTableName, string toColumn)
+        public string GenerateGetAllForeignKeysForTableQuery(
+            string schema, 
+            string fromTableName, 
+            string fromColumn, 
+            string toTableName, 
+            string toColumn)
         {
             return $@"SELECT  obj.name AS FK_NAME
             FROM sys.foreign_key_columns fkc

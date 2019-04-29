@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
+using SolutionDllLoadTest.Entities;
 using SolutionDllLoadTest.RelationshipDTOs;
 
 namespace SolutionDllLoadTest.Extensions

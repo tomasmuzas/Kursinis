@@ -24,14 +24,17 @@ namespace SolutionDllLoadTest
 
             IQueryGenerator generator = new SqlServerQueryGenerator();
 
+            dbContextInstance.Database.Connection.Open();
+            var dt = dbContextInstance.Database.Connection.GetSchema("IndexColumns");
+
             foreach (var entityInformation in entitiesInfo)
             {
                 Console.WriteLine("Entity:");
                 Console.WriteLine(entityInformation.ClrType.Name);
                 Console.WriteLine("Table name:");
                 Console.WriteLine(entityInformation.TableInformation.Name);
-                //Console.WriteLine("Keys:");
-                //Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityType)));
+                Console.WriteLine("Keys:");
+                Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityInformation.ClrType)));
                 Console.WriteLine("Foreign Keys:");
                 var foreignKeys = entityInformation.ForeignKeys;
 

@@ -4,6 +4,8 @@ namespace SolutionDllLoadTest.RelationshipDTOs
 {
     public class ForeignKey
     {
+        public string DatabaseName { get; set; }
+
         public Type FromEntity { get; set; }
 
         public string FromColumn { get; set; }

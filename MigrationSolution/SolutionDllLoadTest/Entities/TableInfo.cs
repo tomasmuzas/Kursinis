@@ -1,4 +1,4 @@
-﻿namespace SolutionDllLoadTest.RelationshipDTOs
+﻿namespace SolutionDllLoadTest.Entities
 {
     public class TableInfo
     {
