@@ -2,7 +2,7 @@
 {
     public class ReflectedPrimaryKey
     {
-        public string DatabaseName { get; set; }
+        public string Name { get; set; }
 
         public string PropertyName { get; set; }
     }

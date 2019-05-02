@@ -68,7 +68,7 @@ namespace SolutionDllLoadTest.Extensions
             };
         }
 
-        public static string[] GetKeyNames(this MetadataWorkspace metadata, Type entityType)
+        public static string[] GetPrimaryKeys(this MetadataWorkspace metadata, Type entityType)
         {
             // Get the mapping between CLR types and metadata OSpace
             var objectItemCollection = ((ObjectItemCollection)metadata.GetItemCollection(DataSpace.OSpace));

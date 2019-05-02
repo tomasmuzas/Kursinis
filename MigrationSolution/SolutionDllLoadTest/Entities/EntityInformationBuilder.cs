@@ -42,13 +42,27 @@ namespace SolutionDllLoadTest.Entities
                 {
                     ClrType = entityType,
                     TableInformation = metadata.GetTableInfo(entityType),
-                    ForeignKeys = GetForeignKeys(dbContextInstance, metadata, entityType)
+                    ForeignKeys = GetForeignKeys(dbContextInstance, metadata, entityType),
+                    PrimaryKeys = GetPrimaryKeys(dbContextInstance, metadata, entityType)
                 };
 
                 entitiesInfo.Add(entity);
             }
 
             return entitiesInfo;
+        }
+
+        private IEnumerable<PrimaryKey> GetPrimaryKeys(
+            DbContext dbContext,
+            MetadataWorkspace metadata,
+            Type entityType)
+        {
+            var tableInfo = metadata.GetTableInfo(entityType);
+            var databasePrimaryKeyInfo = _sqlHelper.GetPrimaryKeyInformation(dbContext, tableInfo.Name);
+            var reflectionPrimaryKeyInfo = metadata.GetPrimaryKeys(entityType);
+            var primaryKeys = _relationshipMapper.MapPrimaryKeys(databasePrimaryKeyInfo, reflectionPrimaryKeyInfo);
+
+            return primaryKeys;
         }
 
         private IEnumerable<ForeignKey> GetForeignKeys(

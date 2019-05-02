@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
+using SolutionDllLoadTest.Relationships.DatabaseRelationships;
 
 namespace SolutionDllLoadTest.SqlHelpers
 {
@@ -9,5 +10,9 @@ namespace SolutionDllLoadTest.SqlHelpers
             DbContext databaseContext,
             string schema,
             string fromTableName);
+
+        IEnumerable<DatabasePrimaryKeyInfo> GetPrimaryKeyInformation(
+            DbContext databaseContext,
+            string tableName);
     }
 }

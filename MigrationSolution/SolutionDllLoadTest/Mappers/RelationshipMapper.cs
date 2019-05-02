@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SolutionDllLoadTest.Entities;
+using SolutionDllLoadTest.Relationships.DatabaseRelationships;
 using SolutionDllLoadTest.Relationships.ReflectionRelationships;
 using SolutionDllLoadTest.SqlHelpers;
 
@@ -35,6 +36,32 @@ namespace SolutionDllLoadTest.Mappers
                     };
 
                     foreignKeys.Add(foreignKey);
+                }
+            }
+
+            return foreignKeys;
+        }
+
+        public IEnumerable<PrimaryKey> MapPrimaryKeys(
+            IEnumerable<DatabasePrimaryKeyInfo> databasePrimaryKeys,
+            IEnumerable<string> reflectedPrimaryKeys)
+        {
+            var foreignKeys = new List<PrimaryKey>();
+
+            foreach (var reflectedPrimaryKey in reflectedPrimaryKeys)
+            {
+                var matchingDatabasePrimaryKey = databasePrimaryKeys
+                    .SingleOrDefault(dbpk => dbpk.Column == reflectedPrimaryKey);
+
+                if (matchingDatabasePrimaryKey != null)
+                {
+                    var primaryKey = new PrimaryKey
+                    {
+                        Name = matchingDatabasePrimaryKey.Name,
+                        ColumnName = matchingDatabasePrimaryKey.Column
+                    };
+
+                    foreignKeys.Add(primaryKey);
                 }
             }
 

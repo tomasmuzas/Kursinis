@@ -8,5 +8,7 @@
             string fromTableName, 
             string toTableName, 
             string fromColumn);
+
+        string GeneratePrimaryKeyRenameQuery(string originalName, string schema, string tableName);
     }
 }

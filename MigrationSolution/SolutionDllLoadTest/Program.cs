@@ -32,12 +32,19 @@ namespace SolutionDllLoadTest
 
             foreach (var entityInformation in entitiesInfo)
             {
+                var tableInfo = entityInformation.TableInformation;
+
                 Console.WriteLine("Entity:");
                 Console.WriteLine(entityInformation.ClrType.Name);
                 Console.WriteLine("Table name:");
                 Console.WriteLine(entityInformation.TableInformation.Name);
-                //Console.WriteLine("Keys:");
-                //Console.WriteLine(string.Join(",", metadata.GetKeyNames(entityInformation.ClrType)));
+                Console.WriteLine("Primary Keys:");
+
+                foreach (var primaryKey in entityInformation.PrimaryKeys)
+                {
+                    Console.WriteLine(generator.GeneratePrimaryKeyRenameQuery(primaryKey.Name, tableInfo.Schema, tableInfo.Name));
+                }
+
                 Console.WriteLine("Foreign Keys:");
 
                 foreach (var foreignKey in entityInformation.ForeignKeys)

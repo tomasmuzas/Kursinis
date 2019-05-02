@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using SolutionDllLoadTest.Relationships.DatabaseRelationships;
 
 namespace SolutionDllLoadTest.SqlHelpers
 {
@@ -36,6 +37,23 @@ namespace SolutionDllLoadTest.SqlHelpers
 
             return databaseContext.Database
                 .SqlQuery<DatabaseForeignKeyInfo>(query)
+                .ToList();
+        }
+
+        public IEnumerable<DatabasePrimaryKeyInfo> GetPrimaryKeyInformation(
+            DbContext databaseContext,
+            string tableName)
+        {
+            var query = $@"SELECT column_name as ""Column"", TC.CONSTRAINT_NAME as Name
+                            FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS TC
+                            INNER JOIN
+                                INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS KU
+                                      ON TC.CONSTRAINT_TYPE = 'PRIMARY KEY' AND
+                                         TC.CONSTRAINT_NAME = KU.CONSTRAINT_NAME AND 
+                                         KU.table_name='{tableName}'
+                            ORDER BY KU.TABLE_NAME, KU.ORDINAL_POSITION;";
+            return databaseContext.Database
+                .SqlQuery<DatabasePrimaryKeyInfo>(query)
                 .ToList();
         }
     }
