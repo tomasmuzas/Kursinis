@@ -23,17 +23,13 @@ namespace EntityFrameworkMigrator.Entities
             _relationshipMapper = relationshipMapper;
         }
 
-        public EntityDatabaseMap BuildEntityDatabaseMapFromAssembly(Assembly assembly)
+        public EntityDatabaseMap BuildEntityDatabaseMap(DbContext dbContext)
         {
             var map = new EntityDatabaseMap();
 
-            var dbContextType = assembly.DefinedTypes
-                .Single(t => t.IsSubclassOf(typeof(DbContext)));
-            var dbContextInstance = (DbContext)Activator.CreateInstance(dbContextType);
+            map.DatabaseName = dbContext.GetDatabaseName();
 
-            map.DatabaseName = dbContextInstance.GetDatabaseName();
-
-            var metadata = dbContextInstance.GetMetadata();
+            var metadata = dbContext.GetMetadata();
 
             var entityTypes = metadata.GetEntityTypes();
 
@@ -41,9 +37,9 @@ namespace EntityFrameworkMigrator.Entities
                 {
                     ClrType = entityType,
                     TableInformation = metadata.GetTableInfo(entityType),
-                    ForeignKeys = GetForeignKeys(dbContextInstance, metadata, entityType),
-                    PrimaryKeys = GetPrimaryKeys(dbContextInstance, metadata, entityType),
-                    Indices = GetIndices(dbContextInstance, metadata, entityType)
+                    ForeignKeys = GetForeignKeys(dbContext, metadata, entityType),
+                    PrimaryKeys = GetPrimaryKeys(dbContext, metadata, entityType),
+                    Indices = GetIndices(dbContext, metadata, entityType)
                 })
                 .ToList();
 

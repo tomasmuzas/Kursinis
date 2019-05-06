@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System.Data.Common;
+using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 
@@ -21,6 +22,13 @@ namespace EntityFrameworkMigrator.Extensions
             var name = dbContext.Database.Connection.Database;
             dbContext.Database.Connection.Close();
             return name;
+        }
+
+        public static DbProviderFactory GetDatabaseProviderFactory(this DbContext dbContext)
+        {
+            return DbProviderFactories
+                .GetFactory(
+                    dbContext.Database.Connection);
         }
     }
 }

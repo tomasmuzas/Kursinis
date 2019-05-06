@@ -73,6 +73,7 @@
     <Compile Include="QueryGenerators\SqlServerQueryGenerator.cs" />
     <Compile Include="Relationships\DatabaseRelationships\DatabaseForeignKeyInfo.cs" />
     <Compile Include="Relationships\DatabaseRelationships\DatabasePrimaryKeyInfo.cs" />
+    <Compile Include="Services\SqlQueryProviderLocator.cs" />
     <Compile Include="SqlHelpers\ISqlHelper.cs" />
     <Compile Include="SqlHelpers\SqlServerHelper.cs" />
   </ItemGroup>
