@@ -31,17 +31,17 @@ namespace EntityFrameworkMigrator
 
             var dbContextInstance = (DbContext)Activator.CreateInstance(dbContextType);
             DbProviderFactory factory = dbContextInstance.GetDatabaseProviderFactory();
-
-            ISqlHelper helper;
             try
             {
-                helper = SqlQueryProviderLocator.ResolveSqlHelper(factory);
+                SqlQueryProviderLocator.AssertSupported(factory);
             }
             catch (NotImplementedException)
             {
-                Console.WriteLine("ERROR: Cannot get entity information. Unsupported DBMS type");
+                Console.WriteLine("ERROR: Unsupported DBMS type");
                 return 1;
             }
+
+            ISqlHelper helper = SqlQueryProviderLocator.ResolveSqlHelper(factory);
 
             var entitiesBuilder = new EntityInformationBuilder(helper, new RelationshipMapper());
 
@@ -49,16 +49,7 @@ namespace EntityFrameworkMigrator
             var entityMap = entitiesBuilder.BuildEntityDatabaseMap(dbContextInstance);
             Console.WriteLine("Entity information and relationships fetched successfully");
 
-            IQueryGenerator generator;
-            try
-            {
-                generator = SqlQueryProviderLocator.ResolveQueryProvider(factory);
-            }
-            catch (NotImplementedException)
-            {
-                Console.WriteLine("ERROR: Cannot generate database migration script. Unsupported DBMS type");
-                return 1;
-            }
+            IQueryGenerator generator = SqlQueryProviderLocator.ResolveQueryProvider(factory);
 
             var migrationScriptGenerator = new MigrationScriptGenerator(generator);
             Console.Write(migrationScriptGenerator.GenerateMigrationScript(entityMap));

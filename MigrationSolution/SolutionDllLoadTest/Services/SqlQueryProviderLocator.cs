@@ -21,26 +21,25 @@ namespace EntityFrameworkMigrator.Services
 
         public static IQueryGenerator ResolveQueryProvider(DbProviderFactory dbmsType)
         {
-            var exists = generators.TryGetValue(dbmsType.GetType(), out var generator);
-
-            if (!exists)
-            {
-                throw new NotImplementedException();
-            }
+            var generator = generators[dbmsType.GetType()];
 
             return generator;
         }
 
         public static ISqlHelper ResolveSqlHelper(DbProviderFactory dbmsType)
         {
-            var exists = helpers.TryGetValue(dbmsType.GetType(), out var helper);
+            var helper = helpers[dbmsType.GetType()];
 
-            if (!exists)
+            return helper;
+        }
+
+        public static void AssertSupported(DbProviderFactory dbmsType)
+        {
+            var type = dbmsType.GetType();
+            if (!helpers.TryGetValue(type, out var helper) && !generators.TryGetValue(type, out var generator))
             {
                 throw new NotImplementedException();
             }
-
-            return helper;
         }
     }
 }
