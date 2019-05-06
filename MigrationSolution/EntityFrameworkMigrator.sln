@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28809.33
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SolutionDllLoadTest", "SolutionDllLoadTest\SolutionDllLoadTest.csproj", "{CAF67A84-C6FE-4521-AE0D-0E06CC38228E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFrameworkMigrator", "SolutionDllLoadTest\EntityFrameworkMigrator.csproj", "{CAF67A84-C6FE-4521-AE0D-0E06CC38228E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

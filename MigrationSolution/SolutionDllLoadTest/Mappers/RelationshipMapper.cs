@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SolutionDllLoadTest.Entities;
-using SolutionDllLoadTest.Relationships.DatabaseRelationships;
-using SolutionDllLoadTest.Relationships.ReflectionRelationships;
-using SolutionDllLoadTest.SqlHelpers;
+using EntityFrameworkMigrator.Entities;
+using EntityFrameworkMigrator.Relationships.DatabaseRelationships;
+using EntityFrameworkMigrator.Relationships.ReflectionRelationships;
 
-namespace SolutionDllLoadTest.Mappers
+namespace EntityFrameworkMigrator.Mappers
 {
     public class RelationshipMapper
     {

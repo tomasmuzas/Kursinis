@@ -1,7 +1,7 @@
 ﻿using System;
-using SolutionDllLoadTest.Entities;
+using EntityFrameworkMigrator.Entities;
 
-namespace SolutionDllLoadTest.Relationships.ReflectionRelationships
+namespace EntityFrameworkMigrator.Relationships.ReflectionRelationships
 {
     public class ReflectedForeignKeyInfo
     {

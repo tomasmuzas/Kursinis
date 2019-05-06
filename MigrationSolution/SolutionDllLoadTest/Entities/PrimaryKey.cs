@@ -1,4 +1,4 @@
-﻿namespace SolutionDllLoadTest.Entities
+﻿namespace EntityFrameworkMigrator.Entities
 {
     public class PrimaryKey
     {

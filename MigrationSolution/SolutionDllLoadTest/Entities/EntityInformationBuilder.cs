@@ -4,11 +4,11 @@ using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
 using System.Reflection;
-using SolutionDllLoadTest.Extensions;
-using SolutionDllLoadTest.Mappers;
-using SolutionDllLoadTest.SqlHelpers;
+using EntityFrameworkMigrator.Extensions;
+using EntityFrameworkMigrator.Mappers;
+using EntityFrameworkMigrator.SqlHelpers;
 
-namespace SolutionDllLoadTest.Entities
+namespace EntityFrameworkMigrator.Entities
 {
     public class EntityInformationBuilder
     {

@@ -1,4 +1,4 @@
-﻿namespace SolutionDllLoadTest.QueryGenerators
+﻿namespace EntityFrameworkMigrator.QueryGenerators
 {
     public interface IQueryGenerator
     {

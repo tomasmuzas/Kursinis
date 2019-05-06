@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using SolutionDllLoadTest.Relationships.DatabaseRelationships;
+using EntityFrameworkMigrator.Relationships.DatabaseRelationships;
 
-namespace SolutionDllLoadTest.SqlHelpers
+namespace EntityFrameworkMigrator.SqlHelpers
 {
     public class SqlServerHelper : ISqlHelper
     {

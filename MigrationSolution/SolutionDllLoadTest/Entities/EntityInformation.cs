@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SolutionDllLoadTest.Entities
+namespace EntityFrameworkMigrator.Entities
 {
     public class EntityInformation
     {

@@ -1,4 +1,4 @@
-﻿namespace SolutionDllLoadTest.Relationships.ReflectionRelationships
+﻿namespace EntityFrameworkMigrator.Relationships.ReflectionRelationships
 {
     public class ReflectedPrimaryKey
     {

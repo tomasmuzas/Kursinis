@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using SolutionDllLoadTest.Entities;
+using EntityFrameworkMigrator.Entities;
 
-namespace SolutionDllLoadTest.QueryGenerators
+namespace EntityFrameworkMigrator.QueryGenerators
 {
     public static class CommentStrings
     {

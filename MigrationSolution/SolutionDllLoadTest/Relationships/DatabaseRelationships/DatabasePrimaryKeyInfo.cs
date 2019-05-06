@@ -1,4 +1,4 @@
-﻿namespace SolutionDllLoadTest.Relationships.DatabaseRelationships
+﻿namespace EntityFrameworkMigrator.Relationships.DatabaseRelationships
 {
     public class DatabasePrimaryKeyInfo
     {

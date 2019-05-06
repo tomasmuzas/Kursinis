@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-namespace SolutionDllLoadTest.Entities
+namespace EntityFrameworkMigrator.Entities
 {
     public class TableInfo
     {

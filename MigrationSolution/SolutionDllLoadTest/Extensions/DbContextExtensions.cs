@@ -2,7 +2,7 @@
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Data.Entity.Infrastructure;
 
-namespace SolutionDllLoadTest.Extensions
+namespace EntityFrameworkMigrator.Extensions
 {
     public static class DbContextExtensions
     {

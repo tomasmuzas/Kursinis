@@ -1,16 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
-using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Reflection;
-using SolutionDllLoadTest.Entities;
-using SolutionDllLoadTest.Relationships.ReflectionRelationships;
+using EntityFrameworkMigrator.Entities;
+using EntityFrameworkMigrator.Relationships.ReflectionRelationships;
 
-namespace SolutionDllLoadTest.Extensions
+namespace EntityFrameworkMigrator.Extensions
 {
     public static class MetadataExtensions
     {

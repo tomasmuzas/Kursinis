@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Data.Entity;
-using SolutionDllLoadTest.Relationships.DatabaseRelationships;
+using EntityFrameworkMigrator.Relationships.DatabaseRelationships;
 
-namespace SolutionDllLoadTest.SqlHelpers
+namespace EntityFrameworkMigrator.SqlHelpers
 {
     public interface ISqlHelper
     {

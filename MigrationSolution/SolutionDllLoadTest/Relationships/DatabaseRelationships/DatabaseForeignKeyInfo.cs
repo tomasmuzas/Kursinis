@@ -1,4 +1,4 @@
-﻿namespace SolutionDllLoadTest.SqlHelpers
+﻿namespace EntityFrameworkMigrator.Relationships.DatabaseRelationships
 {
     public class DatabaseForeignKeyInfo
     {

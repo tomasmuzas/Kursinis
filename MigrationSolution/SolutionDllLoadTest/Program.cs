@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Reflection;
-using SolutionDllLoadTest.Entities;
-using SolutionDllLoadTest.Mappers;
-using SolutionDllLoadTest.QueryGenerators;
-using SolutionDllLoadTest.SqlHelpers;
+using EntityFrameworkMigrator.Entities;
+using EntityFrameworkMigrator.Mappers;
+using EntityFrameworkMigrator.QueryGenerators;
+using EntityFrameworkMigrator.SqlHelpers;
 
-namespace SolutionDllLoadTest
+namespace EntityFrameworkMigrator
 {
     public class Program
     {
