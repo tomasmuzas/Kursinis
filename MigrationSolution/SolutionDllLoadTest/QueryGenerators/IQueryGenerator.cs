@@ -12,5 +12,9 @@
         string GeneratePrimaryKeyRenameQuery(string originalName, string schema, string tableName);
 
         string GenerateIndexRenameQuery(string originalName, string schema, string tableName, string columnName);
+
+        string GenerateDatabaseSelectionQuery(string databaseName);
+
+        string Comment { get; }
     }
 }

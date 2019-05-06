@@ -14,5 +14,10 @@ namespace SolutionDllLoadTest.Extensions
 
             return metadata;
         }
+
+        public static string GetDatabaseName(this DbContext dbContext)
+        {
+            return dbContext.Database.Connection.Database;
+        }
     }
 }

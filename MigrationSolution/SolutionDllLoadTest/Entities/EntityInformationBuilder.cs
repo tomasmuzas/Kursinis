@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
 using System.Linq;
@@ -24,33 +23,33 @@ namespace SolutionDllLoadTest.Entities
             _relationshipMapper = relationshipMapper;
         }
 
-        public IEnumerable<EntityInformation> BuildEntityInformationFromAssembly(Assembly assembly)
+        public EntityDatabaseMap BuildEntityDatabaseMapFromAssembly(Assembly assembly)
         {
+            var map = new EntityDatabaseMap();
+
             var dbContextType = assembly.DefinedTypes
                 .Single(t => t.IsSubclassOf(typeof(DbContext)));
             var dbContextInstance = (DbContext)Activator.CreateInstance(dbContextType);
 
-            var metadata = dbContextInstance.GetMetadata();
+            map.DatabaseName = dbContextInstance.GetDatabaseName();
 
-            var entitiesInfo = new List<EntityInformation>();
+            var metadata = dbContextInstance.GetMetadata();
 
             var entityTypes = metadata.GetEntityTypes();
 
-            foreach (var entityType in entityTypes)
-            {
-                var entity = new EntityInformation
+            var entitiesInfo = entityTypes.Select(entityType => new EntityInformation
                 {
                     ClrType = entityType,
                     TableInformation = metadata.GetTableInfo(entityType),
                     ForeignKeys = GetForeignKeys(dbContextInstance, metadata, entityType),
                     PrimaryKeys = GetPrimaryKeys(dbContextInstance, metadata, entityType),
                     Indices = GetIndices(dbContextInstance, metadata, entityType)
-                };
+                })
+                .ToList();
 
-                entitiesInfo.Add(entity);
-            }
+            map.EntityInformation = entitiesInfo;
 
-            return entitiesInfo;
+            return map;
         }
 
         private IEnumerable<PrimaryKey> GetPrimaryKeys(
@@ -62,6 +61,11 @@ namespace SolutionDllLoadTest.Entities
             var databasePrimaryKeyInfo = _sqlHelper.GetPrimaryKeyInformation(dbContext, tableInfo.Name);
             var reflectionPrimaryKeyInfo = metadata.GetPrimaryKeys(entityType);
             var primaryKeys = _relationshipMapper.MapPrimaryKeys(databasePrimaryKeyInfo, reflectionPrimaryKeyInfo);
+
+            foreach (var primaryKey in primaryKeys)
+            {
+                primaryKey.Table = tableInfo;
+            }
 
             return primaryKeys;
         }
