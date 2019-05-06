@@ -56,5 +56,30 @@ namespace SolutionDllLoadTest.SqlHelpers
                 .SqlQuery<DatabasePrimaryKeyInfo>(query)
                 .ToList();
         }
+
+        public IEnumerable<DatabaseIndexInfo> GetIndexInformation(
+            DbContext databaseContext,
+            string tableName)
+        {
+            var query = $@"SELECT S.NAME [Schema], T.NAME [TableName], I.NAME [Name], C.NAME [Column]
+                            FROM SYS.TABLES T
+                            INNER JOIN SYS.SCHEMAS S
+                            ON T.SCHEMA_ID = S.SCHEMA_ID
+                            INNER JOIN SYS.INDEXES I
+                            ON I.OBJECT_ID = T.OBJECT_ID
+                            INNER JOIN SYS.INDEX_COLUMNS IC
+                            ON IC.OBJECT_ID = T.OBJECT_ID
+                            INNER JOIN SYS.COLUMNS C
+                            ON C.OBJECT_ID = T.OBJECT_ID
+                            AND IC.INDEX_ID = I.INDEX_ID
+                            AND IC.COLUMN_ID = C.COLUMN_ID
+                            WHERE I.is_primary_key = 0
+                            AND T.NAME = '{tableName}'
+
+                            ORDER BY I.NAME,I.INDEX_ID,IC.KEY_ORDINAL";
+            return databaseContext.Database
+                .SqlQuery<DatabaseIndexInfo>(query)
+                .ToList();
+        }
     }
 }

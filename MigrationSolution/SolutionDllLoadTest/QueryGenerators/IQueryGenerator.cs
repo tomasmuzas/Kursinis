@@ -10,5 +10,7 @@
             string fromColumn);
 
         string GeneratePrimaryKeyRenameQuery(string originalName, string schema, string tableName);
+
+        string GenerateIndexRenameQuery(string originalName, string schema, string tableName, string columnName);
     }
 }

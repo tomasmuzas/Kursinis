@@ -12,5 +12,7 @@ namespace SolutionDllLoadTest.Entities
         public IEnumerable<PrimaryKey> PrimaryKeys { get; set; }
 
         public IEnumerable<ForeignKey> ForeignKeys { get; set; }
+
+        public IEnumerable<Index> Indices{ get; set; }
     }
 }

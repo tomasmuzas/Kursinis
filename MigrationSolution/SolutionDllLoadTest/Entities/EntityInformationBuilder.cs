@@ -43,7 +43,8 @@ namespace SolutionDllLoadTest.Entities
                     ClrType = entityType,
                     TableInformation = metadata.GetTableInfo(entityType),
                     ForeignKeys = GetForeignKeys(dbContextInstance, metadata, entityType),
-                    PrimaryKeys = GetPrimaryKeys(dbContextInstance, metadata, entityType)
+                    PrimaryKeys = GetPrimaryKeys(dbContextInstance, metadata, entityType),
+                    Indices = GetIndices(dbContextInstance, metadata, entityType)
                 };
 
                 entitiesInfo.Add(entity);
@@ -63,6 +64,18 @@ namespace SolutionDllLoadTest.Entities
             var primaryKeys = _relationshipMapper.MapPrimaryKeys(databasePrimaryKeyInfo, reflectionPrimaryKeyInfo);
 
             return primaryKeys;
+        }
+
+        private IEnumerable<Index> GetIndices(
+            DbContext dbContext,
+            MetadataWorkspace metadata,
+            Type entityType)
+        {
+            var tableInfo = metadata.GetTableInfo(entityType);
+            var databaseIndexInfo = _sqlHelper.GetIndexInformation(dbContext, tableInfo.Name);
+            var indexes = _relationshipMapper.MapIndexes(databaseIndexInfo, tableInfo);
+
+            return indexes;
         }
 
         private IEnumerable<ForeignKey> GetForeignKeys(

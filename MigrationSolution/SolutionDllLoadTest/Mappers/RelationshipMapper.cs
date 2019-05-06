@@ -46,7 +46,7 @@ namespace SolutionDllLoadTest.Mappers
             IEnumerable<DatabasePrimaryKeyInfo> databasePrimaryKeys,
             IEnumerable<string> reflectedPrimaryKeys)
         {
-            var foreignKeys = new List<PrimaryKey>();
+            var primaryKeys = new List<PrimaryKey>();
 
             foreach (var reflectedPrimaryKey in reflectedPrimaryKeys)
             {
@@ -61,11 +61,24 @@ namespace SolutionDllLoadTest.Mappers
                         ColumnName = matchingDatabasePrimaryKey.Column
                     };
 
-                    foreignKeys.Add(primaryKey);
+                    primaryKeys.Add(primaryKey);
                 }
             }
 
-            return foreignKeys;
+            return primaryKeys;
+        }
+
+        public IEnumerable<Index> MapIndexes(IEnumerable<DatabaseIndexInfo> databaseIndexInfo, TableInfo tableInfo)
+        {
+            return databaseIndexInfo.Where(i => i.Schema == tableInfo.Schema
+                                         && i.TableName == tableInfo.Name
+                                         && tableInfo.ColumnPropertyMap.ContainsKey(i.Column))
+                .Select(i => new Index
+                {
+                    Name = i.Name,
+                    ColumnName = i.Column,
+                    Table = tableInfo
+                });
         }
     }
 }

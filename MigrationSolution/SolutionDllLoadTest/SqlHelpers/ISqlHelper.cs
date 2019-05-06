@@ -14,5 +14,9 @@ namespace SolutionDllLoadTest.SqlHelpers
         IEnumerable<DatabasePrimaryKeyInfo> GetPrimaryKeyInformation(
             DbContext databaseContext,
             string tableName);
+
+        IEnumerable<DatabaseIndexInfo> GetIndexInformation(
+            DbContext databaseContext,
+            string tableName);
     }
 }

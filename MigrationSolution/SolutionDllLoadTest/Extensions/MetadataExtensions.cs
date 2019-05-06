@@ -1,8 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Data.Entity.Core.Mapping;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core.Objects;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
+using System.Reflection;
 using SolutionDllLoadTest.Entities;
 using SolutionDllLoadTest.Relationships.ReflectionRelationships;
 
@@ -29,6 +33,21 @@ namespace SolutionDllLoadTest.Extensions
                 .GetItems<EntityType>()
                 .Select(i => objectItemCollection.GetClrType(i))
                 .SingleOrDefault(t => t.Name == entityName);
+        }
+
+        public static IDictionary<string, PropertyInfo> GetTableColumns(this MetadataWorkspace metadata, Type entityType)
+        {
+            var items = metadata.GetItems(DataSpace.CSSpace);
+            var storageEntityType = metadata.GetItems(DataSpace.SSpace)
+                .Where(x => x.BuiltInTypeKind == BuiltInTypeKind.EntityType).OfType<EntityType>()
+                .Single(x => x.Name == entityType.Name);
+
+            var columnNames = storageEntityType.Properties.ToDictionary(x => x.Name,
+                y => y.MetadataProperties.FirstOrDefault(x => x.Name == "PreferredName")?.Value as string ?? y.Name);
+
+            return storageEntityType.Properties.Select((elm, index) =>
+                    new { elm.Name, Property = entityType.GetProperty(columnNames[elm.Name]) })
+                .ToDictionary(x => x.Name, x => x.Property);
         }
 
         public static TableInfo GetTableInfo(this MetadataWorkspace metadata, Type entityType)
@@ -64,7 +83,8 @@ namespace SolutionDllLoadTest.Extensions
             return new TableInfo
             {
                 Schema = (string)table.MetadataProperties["Schema"].Value,
-                Name = (string)table.MetadataProperties["Table"].Value
+                Name = (string)table.MetadataProperties["Table"].Value,
+                ColumnPropertyMap = metadata.GetTableColumns(entityType)
             };
         }
 

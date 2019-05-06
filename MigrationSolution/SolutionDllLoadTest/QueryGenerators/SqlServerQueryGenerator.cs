@@ -16,5 +16,10 @@
         {
             return $"EXEC sp_rename N'[{schema}].[{tableName}].[{originalName}]',N'PK_{tableName}'";
         }
+
+        public string GenerateIndexRenameQuery(string originalName, string schema, string tableName, string columnName)
+        {
+            return $"EXEC sp_rename N'{schema}.{tableName}.{originalName}',N'IX_{tableName}_{columnName}', N'INDEX'";
+        }
     }
 }

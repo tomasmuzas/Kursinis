@@ -56,6 +56,17 @@ namespace SolutionDllLoadTest
                         foreignKey.ToTable.Name,
                         foreignKey.FromColumn));
                 }
+
+                Console.WriteLine("Indices:");
+
+                foreach (var index in entityInformation.Indices)
+                {
+                    Console.WriteLine(generator.GenerateIndexRenameQuery(
+                        index.Name, 
+                        index.Table.Schema, 
+                        index.Table.Name, 
+                        index.ColumnName));
+                }
                 Console.WriteLine();
             }
 
