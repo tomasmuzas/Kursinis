@@ -17,7 +17,10 @@ namespace SolutionDllLoadTest.Extensions
 
         public static string GetDatabaseName(this DbContext dbContext)
         {
-            return dbContext.Database.Connection.Database;
+            dbContext.Database.Connection.Open();
+            var name = dbContext.Database.Connection.Database;
+            dbContext.Database.Connection.Close();
+            return name;
         }
     }
 }
