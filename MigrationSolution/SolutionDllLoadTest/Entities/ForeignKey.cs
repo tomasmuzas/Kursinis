@@ -1,4 +1,6 @@
-﻿namespace EntityFrameworkMigrator.Entities
+﻿using System;
+
+namespace EntityFrameworkMigrator.Entities
 {
     public class ForeignKey
     {
@@ -13,5 +15,18 @@
         public TableInfo ToTable { get; set; }
 
         public string ToColumn { get; set; }
+
+        public string EfCoreFromColumnName
+        {
+            get
+            {
+                if (FromColumn.EndsWith("_id", StringComparison.OrdinalIgnoreCase))
+                {
+                    return FromColumn.Replace("_", "");
+                }
+
+                return FromColumn;
+            }
+        }
     }
 }

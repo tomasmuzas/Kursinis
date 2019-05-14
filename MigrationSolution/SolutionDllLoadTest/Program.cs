@@ -16,7 +16,7 @@ namespace EntityFrameworkMigrator
     {
         static int Main(string[] args)
         {
-            if (string.IsNullOrEmpty(args[0]))
+            if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
             {
                 Console.WriteLine("ERROR: No assembly supplied.");
                 return 1; 

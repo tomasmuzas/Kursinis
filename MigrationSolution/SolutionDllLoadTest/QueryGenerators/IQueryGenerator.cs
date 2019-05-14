@@ -9,6 +9,8 @@
             string toTableName, 
             string fromColumn);
 
+        string GenerateColumnRenameQuery(string originalName, string newName, string schema, string tableName);
+
         string GeneratePrimaryKeyRenameQuery(string originalName, string schema, string tableName);
 
         string GenerateIndexRenameQuery(string originalName, string schema, string tableName, string columnName);
