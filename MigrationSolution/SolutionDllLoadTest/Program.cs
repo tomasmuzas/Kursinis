@@ -57,8 +57,20 @@ namespace EntityFrameworkMigrator
 
             using (var transaction = dbContextInstance.Database.BeginTransaction())
             {
-                dbContextInstance.Database.ExecuteSqlCommand(migrationScript);
-                transaction.Rollback();
+                try
+                {
+                    dbContextInstance.Database.ExecuteSqlCommand(migrationScript);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("ERROR: Generated script was not successfully tested against the database.");
+                    return 1;
+                }
+                finally
+                {
+                    transaction.Rollback();
+                }
+                
             }
             
             return 0;
