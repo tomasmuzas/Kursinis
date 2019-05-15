@@ -17,6 +17,12 @@
 
         string GenerateDatabaseSelectionQuery(string databaseName);
 
+        string BeginTransaction { get; }
+
+        string CommitTransaction { get; }
+
+        string RollbackTransaction { get; }
+
         string Comment { get; }
     }
 }

@@ -52,8 +52,15 @@ namespace EntityFrameworkMigrator
             IQueryGenerator generator = SqlQueryProviderLocator.ResolveQueryProvider(factory);
 
             var migrationScriptGenerator = new MigrationScriptGenerator(generator);
-            Console.Write(migrationScriptGenerator.GenerateMigrationScript(entityMap));
+            var migrationScript = migrationScriptGenerator.GenerateMigrationScript(entityMap);
+            Console.Write(migrationScript);
 
+            using (var transaction = dbContextInstance.Database.BeginTransaction())
+            {
+                dbContextInstance.Database.ExecuteSqlCommand(migrationScript);
+                transaction.Rollback();
+            }
+            
             return 0;
         }
     }

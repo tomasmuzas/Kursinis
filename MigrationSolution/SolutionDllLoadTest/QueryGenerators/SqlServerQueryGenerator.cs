@@ -32,6 +32,12 @@
             return $"USE {databaseName};";
         }
 
+        public string BeginTransaction => "BEGIN TRAN";
+
+        public string CommitTransaction => "COMMIT TRAN";
+
+        public string RollbackTransaction => "ROLLBACK TRAN";
+
         public string Comment => "--";
     }
 }
