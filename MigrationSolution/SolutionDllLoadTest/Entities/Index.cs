@@ -1,4 +1,6 @@
-﻿namespace EntityFrameworkMigrator.Entities
+﻿using System;
+
+namespace EntityFrameworkMigrator.Entities
 {
     public class Index
     {
@@ -7,5 +9,18 @@
         public TableInfo Table { get; set; }
 
         public string ColumnName { get; set; }
+
+        public string EfCoreColumnName
+        {
+            get
+            {
+                if (ColumnName.EndsWith("_id", StringComparison.OrdinalIgnoreCase))
+                {
+                    return ColumnName.Replace("_", "");
+                }
+
+                return ColumnName;
+            }
+        }
     }
 }

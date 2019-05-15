@@ -9,6 +9,8 @@ namespace EntityFrameworkMigrator.QueryGenerators
     {
         public static string DatabaseSelection = "Select database";
 
+        public static string RenameIdColumns = "First of all, foreign key ID columns must be renamed according to EF Core standards.";
+
         public static string RenameIndices = "Rename indices";
 
         public static string RenamePrimaryKeys = "Rename primary keys";
@@ -39,6 +41,25 @@ namespace EntityFrameworkMigrator.QueryGenerators
             stringBuilder.Append(newline);
             stringBuilder.Append(newline);
 
+            stringBuilder.Append(comment + " " + CommentStrings.RenameIdColumns);
+            stringBuilder.Append(newline);
+            foreach (var foreignKey in entityMap.EntityInformation.SelectMany(e => e.ForeignKeys))
+            {
+                if (foreignKey.FromColumn != foreignKey.EfCoreFromColumnName)
+                {
+                    var columnRenameQuery = _queryGenerator.GenerateColumnRenameQuery(
+                        foreignKey.FromColumn,
+                        foreignKey.EfCoreFromColumnName,
+                        foreignKey.Schema,
+                        foreignKey.FromTable.Name);
+
+                    stringBuilder.Append(columnRenameQuery);
+                    stringBuilder.Append(newline);
+                }
+            }
+
+            stringBuilder.Append(newline);
+
             stringBuilder.Append(comment + " " + CommentStrings.RenameIndices);
             stringBuilder.Append(newline);
             foreach (var index in entityMap.EntityInformation.SelectMany(e => e.Indices))
@@ -47,7 +68,7 @@ namespace EntityFrameworkMigrator.QueryGenerators
                     index.Name,
                     index.Table.Schema,
                     index.Table.Name,
-                    index.ColumnName);
+                    index.EfCoreColumnName);
 
                 stringBuilder.Append(indexRenameQuery);
                 stringBuilder.Append(newline);
@@ -75,7 +96,7 @@ namespace EntityFrameworkMigrator.QueryGenerators
                     foreignKey.Name,
                     foreignKey.FromTable.Name,
                     foreignKey.ToTable.Name,
-                    foreignKey.FromColumn);
+                    foreignKey.EfCoreFromColumnName);
 
                 stringBuilder.Append(indexRenameQuery);
                 stringBuilder.Append(newline);

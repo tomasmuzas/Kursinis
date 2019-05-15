@@ -16,7 +16,7 @@ namespace EntityFrameworkMigrator
     {
         static int Main(string[] args)
         {
-            if (string.IsNullOrEmpty(args[0]))
+            if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
             {
                 Console.WriteLine("ERROR: No assembly supplied.");
                 return 1; 
@@ -52,8 +52,28 @@ namespace EntityFrameworkMigrator
             IQueryGenerator generator = SqlQueryProviderLocator.ResolveQueryProvider(factory);
 
             var migrationScriptGenerator = new MigrationScriptGenerator(generator);
-            Console.Write(migrationScriptGenerator.GenerateMigrationScript(entityMap));
+            var migrationScript = migrationScriptGenerator.GenerateMigrationScript(entityMap);
+            Console.Write(migrationScript);
 
+            using (var transaction = dbContextInstance.Database.BeginTransaction())
+            {
+                try
+                {
+                    dbContextInstance.Database.ExecuteSqlCommand(migrationScript);
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("ERROR: Generated script was not successfully tested against the database.");
+                    return 1;
+                }
+                finally
+                {
+                    transaction.Rollback();
+                }
+                Console.WriteLine("Generated script was successfully tested against the database. Nothing was changed, transaction rolled back successfully.");
+
+            }
+            
             return 0;
         }
     }

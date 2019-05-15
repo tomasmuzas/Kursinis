@@ -1,4 +1,6 @@
-﻿namespace EntityFrameworkMigrator.Entities
+﻿using System;
+
+namespace EntityFrameworkMigrator.Entities
 {
     public class PrimaryKey
     {
