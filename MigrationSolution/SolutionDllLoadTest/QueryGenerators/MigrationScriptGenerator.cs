@@ -51,7 +51,7 @@ namespace EntityFrameworkMigrator.QueryGenerators
                         foreignKey.FromColumn,
                         foreignKey.EfCoreFromColumnName,
                         foreignKey.Schema,
-                        foreignKey.ToTable.Name);
+                        foreignKey.FromTable.Name);
 
                     stringBuilder.Append(columnRenameQuery);
                     stringBuilder.Append(newline);
@@ -68,7 +68,7 @@ namespace EntityFrameworkMigrator.QueryGenerators
                     index.Name,
                     index.Table.Schema,
                     index.Table.Name,
-                    index.ColumnName);
+                    index.EfCoreColumnName);
 
                 stringBuilder.Append(indexRenameQuery);
                 stringBuilder.Append(newline);
