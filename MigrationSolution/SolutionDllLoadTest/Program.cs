@@ -70,7 +70,8 @@ namespace EntityFrameworkMigrator
                 {
                     transaction.Rollback();
                 }
-                
+                Console.WriteLine("Generated script was successfully tested against the database. Nothing was changed, transaction rolled back successfully.");
+
             }
             
             return 0;
