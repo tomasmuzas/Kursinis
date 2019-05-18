@@ -50,12 +50,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseContext.cs" />
+    <Compile Include="Entities\DbProduct.cs" />
+    <Compile Include="Entities\DbProfile.cs" />
+    <Compile Include="Entities\InvestmentAgreement.cs" />
+    <Compile Include="Migrations\201905181912384_Initial.cs" />
+    <Compile Include="Migrations\201905181912384_Initial.Designer.cs">
+      <DependentUpon>201905181912384_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905181914208_RenameProduct.cs" />
+    <Compile Include="Migrations\201905181914208_RenameProduct.Designer.cs">
+      <DependentUpon>201905181914208_RenameProduct.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201905181912384_Initial.resx">
+      <DependentUpon>201905181912384_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905181914208_RenameProduct.resx">
+      <DependentUpon>201905181914208_RenameProduct.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
