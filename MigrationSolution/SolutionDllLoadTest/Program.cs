@@ -9,13 +9,14 @@ namespace EntityFrameworkMigrator
         {
             if (args.Length == 0 || string.IsNullOrEmpty(args[0]))
             {
-                Console.WriteLine("ERROR: No assembly supplied.");
+                Console.WriteLine("ERROR: No project supplied.");
                 return 1; 
             }
 
             CreateDatabaseMigrationStep.CreateMigrationSql(args[0]);
 
             PrepareProjectFolderStep.CreateProjectCopy(args[1]);
+            PrepareProjectFolderStep.CreateNewProjectFile(args[1]);
             
             return 0;
         }
