@@ -61,6 +61,8 @@
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MetadataExtensions.cs" />
     <Compile Include="Mappers\RelationshipMapper.cs" />
+    <Compile Include="MigrationSteps\CreateDatabaseMigrationStep.cs" />
+    <Compile Include="MigrationSteps\PrepareProjectFolderStep.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryGenerators\IQueryGenerator.cs" />
