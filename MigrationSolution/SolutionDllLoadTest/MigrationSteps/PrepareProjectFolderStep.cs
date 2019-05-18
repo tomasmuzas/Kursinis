@@ -6,9 +6,13 @@ namespace EntityFrameworkMigrator.MigrationSteps
 {
     public class PrepareProjectFolderStep
     {
-        public static void CreateDotnetCoreProjectCopy(string projectPath)
+        public static void CreateProjectCopy(string projectPath)
         {
-            CopyDirectory(projectPath, projectPath + "_dotnet_core", new string[]{}, new string[] { });
+            CopyDirectory(
+                projectPath, 
+                projectPath + "_dotnet_core", 
+                new []{"packages.config"}, 
+                new [] {"bin", "obj", "packages"});
         }
 
         private static void CopyDirectory(string source, string destination, IEnumerable<string> ignoredFiles = null, IEnumerable<string> ignoredFolders = null)
@@ -22,8 +26,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
                     + source);
             }
 
-            var directoriesInFolder = currentDirectory.GetDirectories();
-            // If the destination directory doesn't exist, create it.
+            var directoriesInFolder = currentDirectory.GetDirectories().AsEnumerable();
             if (!Directory.Exists(destination))
             {
                 Directory.CreateDirectory(destination);
@@ -42,6 +45,10 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 file.CopyTo(temppath, false);
             }
 
+            if (ignoredFolders != null)
+            {
+                directoriesInFolder = directoriesInFolder.Where(f => !ignoredFolders.Contains(f.Name));
+            }
             foreach (DirectoryInfo subdir in directoriesInFolder)
             {
                 var temppath = Path.Combine(destination, subdir.Name);
