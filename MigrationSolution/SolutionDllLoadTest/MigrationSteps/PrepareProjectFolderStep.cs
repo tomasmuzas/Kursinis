@@ -12,7 +12,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
             var projectName = GetProjectName(projectPath);
             CopyDirectory(
                 projectPath, 
-                projectPath + "_dotnet_core", 
+                GetNewProjectPath(projectPath), 
                 new []{"packages.config", $"{projectName}.csproj"}, 
                 new [] {"bin", "obj", "packages", "Properties"});
         }
@@ -56,10 +56,10 @@ namespace EntityFrameworkMigrator.MigrationSteps
             project.AppendChild(propertyGroup);
             xml.AppendChild(project);
 
-
-
-            xml.Save(projectPath + "_dotnet_core\\" + projectName);
+            xml.Save(Path.Combine(GetNewProjectPath(projectPath), projectName));
         }
+
+        private static string GetNewProjectPath(string projectPath) => projectPath + "_dotnet_core";
 
         public static string GetProjectName(string projectPath)
         {
