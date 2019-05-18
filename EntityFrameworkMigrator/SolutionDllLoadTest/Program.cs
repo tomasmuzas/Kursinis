@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using EntityFrameworkMigrator.MigrationSteps;
 
 namespace EntityFrameworkMigrator
@@ -13,11 +14,14 @@ namespace EntityFrameworkMigrator
                 return 1; 
             }
 
-            CreateDatabaseMigrationStep.CreateMigrationSql(args[0]);
+            var projectName = PrepareProjectFolderStep.GetProjectName(args[0]).Replace(".csproj", string.Empty);
 
-            PrepareProjectFolderStep.CreateProjectCopy(args[1]);
-            PrepareProjectFolderStep.CreateNewProjectFile(args[1]);
-            
+            CreateDatabaseMigrationStep.CreateMigrationSql(Path.Combine(args[0], "bin", "Debug", $"{projectName}.dll"));
+
+            PrepareProjectFolderStep.CreateProjectCopy(args[0]);
+            PrepareProjectFolderStep.CreateNewProjectFile(args[0]);
+
+            Console.Read();
             return 0;
         }
     }
