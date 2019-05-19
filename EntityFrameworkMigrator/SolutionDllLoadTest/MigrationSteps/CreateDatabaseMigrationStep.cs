@@ -14,17 +14,22 @@ namespace EntityFrameworkMigrator.MigrationSteps
 {
     public class CreateDatabaseMigrationStep
     {
-        public static TypeInfo CreateMigrationSql(string assemblyPath)
+        public TypeInfo DbContextType { get; set; }
+
+        private DbContext DbContextInstance { get; set; }
+
+        public void LoadAssembly(string assemblyPath)
         {
-            Console.WriteLine("Loading Assembly.");
             var assembly = Assembly.LoadFrom(assemblyPath);
-            Console.WriteLine("Assembly loaded successfully.");
 
-            var dbContextType = assembly.DefinedTypes
+            DbContextType = assembly.DefinedTypes
                 .Single(t => t.IsSubclassOf(typeof(DbContext)));
+        }
 
-            var dbContextInstance = (DbContext)Activator.CreateInstance(dbContextType);
-            DbProviderFactory factory = dbContextInstance.GetDatabaseProviderFactory();
+        public EntityDatabaseMap BuildEntityMap()
+        {
+            DbContextInstance = (DbContext)Activator.CreateInstance(DbContextType);
+            DbProviderFactory factory = DbContextInstance.GetDatabaseProviderFactory();
             try
             {
                 SqlQueryProviderLocator.AssertSupported(factory);
@@ -39,21 +44,42 @@ namespace EntityFrameworkMigrator.MigrationSteps
 
             var entitiesBuilder = new EntityInformationBuilder(helper, new RelationshipMapper());
 
-            Console.WriteLine("Fetching entity information and relationships.");
-            var entityMap = entitiesBuilder.BuildEntityDatabaseMap(dbContextInstance);
-            Console.WriteLine("Entity information and relationships fetched successfully");
+            
+            var entityMap = entitiesBuilder.BuildEntityDatabaseMap(DbContextInstance);
+
+            return entityMap;
+        }
+
+        public string CreateMigrationSql(EntityDatabaseMap entityMap)
+        {
+            DbProviderFactory factory = DbContextInstance.GetDatabaseProviderFactory();
+            try
+            {
+                SqlQueryProviderLocator.AssertSupported(factory);
+            }
+            catch (NotImplementedException)
+            {
+                Console.WriteLine("ERROR: Unsupported DBMS type");
+                throw new Exception();
+            }
+
+            ISqlHelper helper = SqlQueryProviderLocator.ResolveSqlHelper(factory);
 
             IQueryGenerator generator = SqlQueryProviderLocator.ResolveQueryProvider(factory);
 
             var migrationScriptGenerator = new MigrationScriptGenerator(generator);
             var migrationScript = migrationScriptGenerator.GenerateMigrationScript(entityMap);
-            Console.Write(migrationScript);
+            return migrationScript;
 
-            using (var transaction = dbContextInstance.Database.BeginTransaction())
+        }
+
+        public void TestSql(string sql)
+        {
+            using (var transaction = DbContextInstance.Database.BeginTransaction())
             {
                 try
                 {
-                    dbContextInstance.Database.ExecuteSqlCommand(migrationScript);
+                    DbContextInstance.Database.ExecuteSqlCommand(sql);
                 }
                 catch (Exception)
                 {
@@ -64,10 +90,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 {
                     transaction.Rollback();
                 }
-                Console.WriteLine("Generated script was successfully tested against the database. Nothing was changed, transaction rolled back successfully.");
             }
-
-            return dbContextType;
         }
     }
 }
