@@ -60,6 +60,7 @@
     <Compile Include="Entities\PrimaryKey.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MetadataExtensions.cs" />
+    <Compile Include="IO\FileHelper.cs" />
     <Compile Include="Mappers\RelationshipMapper.cs" />
     <Compile Include="MigrationSteps\CreateDatabaseMigrationStep.cs" />
     <Compile Include="MigrationSteps\PrepareProjectFolderStep.cs" />

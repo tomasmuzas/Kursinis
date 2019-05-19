@@ -1,25 +1,37 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
+using EntityFrameworkMigrator.IO;
 
 namespace EntityFrameworkMigrator.MigrationSteps
 {
     public class PrepareProjectFolderStep
     {
-        public static void CreateProjectCopy(string projectPath)
+        private string ProjectPath { get; }
+
+        private string NewProjectPath => ProjectPath + "_Dotnet_Core";
+
+        public PrepareProjectFolderStep(string projectPath)
         {
-            var projectName = GetProjectName(projectPath);
-            CopyDirectory(
-                projectPath, 
-                GetNewProjectPath(projectPath), 
-                new []{"packages.config", $"{projectName}.csproj"}, 
-                new [] {"bin", "obj", "packages", "Properties"});
+            ProjectPath = projectPath;
         }
 
-        public static void CreateNewProjectFile(string projectPath)
+        public void CreateProjectCopy()
         {
-            var projectName = GetProjectName(projectPath);
+            var projectName = GetProjectName(ProjectPath);
+            FileHelper.CopyDirectory(
+                ProjectPath, 
+                NewProjectPath, 
+                new []{"packages.config", $"{projectName}.csproj"}, 
+                new [] {"bin", "obj", "packages", "Properties", "Migrations"});
+        }
+
+        public void CreateNewProjectFile()
+        {
+            var projectName = GetProjectName(ProjectPath);
             var xml = new XmlDocument();
             
             // Project
@@ -38,28 +50,50 @@ namespace EntityFrameworkMigrator.MigrationSteps
             propertyGroup.AppendChild(targetFramework);
             propertyGroup.AppendChild(outputType);
 
-            var packages = GetPackages(projectPath);
-            if (packages.Any())
+            var packages = GetProjectPackages();
+            var itemGroup = xml.CreateElement("ItemGroup");
+
+            foreach (var package in packages)
             {
-                var itemGroup = xml.CreateElement("ItemGroup");
-                foreach (var package in packages)
+                // Don't add any Entity Framework nuget packages
+                if (package.Item1 != "EntityFramework" || package.Item1.StartsWith("EntityFramework."))
                 {
                     var packageElement = xml.CreateElement("PackageReference");
                     packageElement.SetAttribute("Include", package.Item1);
                     packageElement.SetAttribute("Version", package.Item2);
                     itemGroup.AppendChild(packageElement);
                 }
-
-                project.AppendChild(itemGroup);
             }
 
+            // "Install" Entity Framework Core
+            var EFCorePackage = xml.CreateElement("PackageReference");
+            EFCorePackage.SetAttribute("Include", "Microsoft.EntityFrameworkCore.SqlServer");
+            EFCorePackage.SetAttribute("Version", "2.1.8");
+            itemGroup.AppendChild(EFCorePackage);
+
             project.AppendChild(propertyGroup);
+            project.AppendChild(itemGroup);
+
             xml.AppendChild(project);
 
-            xml.Save(Path.Combine(GetNewProjectPath(projectPath), projectName));
+            xml.Save(Path.Combine(NewProjectPath, projectName));
         }
 
-        private static string GetNewProjectPath(string projectPath) => projectPath + "_dotnet_core";
+        public void SetupEntityFrameworkCoreDbContext(string dbContextName)
+        {
+            var directory = FileHelper.GetDirectory(ProjectPath);
+            var files = FileHelper.GetFiles(directory);
+
+            var dbContextFile = files.Single(f => f.Name == dbContextName + ".cs");
+            var dbContextText = File.ReadAllText(Path.Combine(NewProjectPath, dbContextFile.Name));
+
+            var replaced = Regex.Replace(dbContextText,
+                @":(\s|\r|\n)*base\s*\(\""([\w=\s\\;\(\)]+)\""\)",
+                @": base(
+new DbContextOptionsBuilder().UseSqlServer(""$2"").Options)");
+
+            File.WriteAllText(Path.Combine(NewProjectPath, dbContextFile.Name), replaced);
+        }
 
         public static string GetProjectName(string projectPath)
         {
@@ -78,54 +112,22 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 .Single();
         }
 
-        private static IEnumerable<(string, string)> GetPackages(string projectPath)
+        public void AdjustEntityFrameworkNamespaces()
+        {
+            FileHelper.ReplaceInFolder(
+                NewProjectPath, 
+                "System.Data.Entity", 
+                "Microsoft.EntityFrameworkCore", 
+                ignoreFolders: new []{"Migrations"});
+        }
+
+        private IEnumerable<(string, string)> GetProjectPackages()
         {
             var doc = new XmlDocument();
-            doc.Load(projectPath + "\\packages.config");
+            doc.Load(ProjectPath + "\\packages.config");
             var nodes = doc.DocumentElement.SelectNodes("/packages/package");
             return nodes.Cast<XmlNode>()
                 .Select(n => (n.Attributes["id"].Value, n.Attributes["version"].Value));
-        }
-
-        private static void CopyDirectory(string source, string destination, IEnumerable<string> ignoredFiles = null, IEnumerable<string> ignoredFolders = null)
-        {
-            var currentDirectory = new DirectoryInfo(source);
-
-            if (!currentDirectory.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Project folder does not exist or could not be found: "
-                    + source);
-            }
-
-            var directoriesInFolder = currentDirectory.GetDirectories().AsEnumerable();
-            if (!Directory.Exists(destination))
-            {
-                Directory.CreateDirectory(destination);
-            }
-
-            var files = currentDirectory.GetFiles().AsEnumerable();
-
-            if (ignoredFiles != null)
-            {
-                files = files.Where(f => !ignoredFiles.Contains(f.Name));
-            }
-
-            foreach (var file in files)
-            {
-                var temppath = Path.Combine(destination, file.Name);
-                file.CopyTo(temppath, false);
-            }
-
-            if (ignoredFolders != null)
-            {
-                directoriesInFolder = directoriesInFolder.Where(f => !ignoredFolders.Contains(f.Name));
-            }
-            foreach (DirectoryInfo subdir in directoriesInFolder)
-            {
-                var temppath = Path.Combine(destination, subdir.Name);
-                CopyDirectory(subdir.FullName, temppath);
-            }
         }
     }
 }
