@@ -2,6 +2,8 @@
 {
     public interface IQueryGenerator
     {
+        string GenerateTableRenameQuery(string schema, string oldName, string newName);
+
         string GenerateForeignKeyRenameQuery(
             string schema,
             string originalForeignKeyName, 

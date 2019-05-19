@@ -81,7 +81,8 @@ namespace EntityFrameworkMigrator.Extensions
             {
                 Schema = (string)table.MetadataProperties["Schema"].Value,
                 Name = (string)table.MetadataProperties["Table"].Value,
-                ColumnPropertyMap = metadata.GetTableColumns(entityType)
+                ColumnPropertyMap = metadata.GetTableColumns(entityType),
+                EFCoreName = entitySet.Name
             };
         }
 

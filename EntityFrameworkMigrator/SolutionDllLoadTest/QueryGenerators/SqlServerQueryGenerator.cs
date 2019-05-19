@@ -2,6 +2,11 @@
 {
     public class SqlServerQueryGenerator : IQueryGenerator
     {
+        public string GenerateTableRenameQuery(string schema, string oldName, string newName)
+        {
+            return $"EXEC sp_rename '{schema}.{oldName}', '{newName}'";
+        }
+
         public string GenerateForeignKeyRenameQuery(
             string schema,
             string originalForeignKeyName, 

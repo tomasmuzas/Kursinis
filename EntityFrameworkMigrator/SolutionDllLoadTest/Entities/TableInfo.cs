@@ -10,5 +10,7 @@ namespace EntityFrameworkMigrator.Entities
         public string Name { get; set; }
 
         public IDictionary<string, PropertyInfo> ColumnPropertyMap { get; set; }
+
+        public string EFCoreName { get; set; }
     }
 }

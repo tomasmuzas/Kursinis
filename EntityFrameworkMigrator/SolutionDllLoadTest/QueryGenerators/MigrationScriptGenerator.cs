@@ -9,7 +9,9 @@ namespace EntityFrameworkMigrator.QueryGenerators
     {
         public static string DatabaseSelection = "Select database";
 
-        public static string RenameIdColumns = "First of all, foreign key ID columns must be renamed according to EF Core standards.";
+        public static string RenameTables = "Entity Framework core uses Entity Set name as table name rather than Entity Type name. Rename tables accordingly.";
+
+        public static string RenameIdColumns = "Foreign key ID columns must be renamed according to EF Core standards.";
 
         public static string RenameIndices = "Rename indices";
 
@@ -41,6 +43,18 @@ namespace EntityFrameworkMigrator.QueryGenerators
             stringBuilder.Append(newline);
             stringBuilder.Append(newline);
 
+            stringBuilder.Append(comment + " " + CommentStrings.RenameTables);
+            stringBuilder.Append(newline);
+
+            foreach (var table in entityMap.EntityInformation.Select(e => e.TableInformation))
+            {
+                var tableRenameQuery = _queryGenerator.GenerateTableRenameQuery(table.Schema, table.Name, table.EFCoreName);
+                stringBuilder.Append(tableRenameQuery);
+                stringBuilder.Append(newline);
+            }
+
+            stringBuilder.Append(newline);
+
             stringBuilder.Append(comment + " " + CommentStrings.RenameIdColumns);
             stringBuilder.Append(newline);
             foreach (var foreignKey in entityMap.EntityInformation.SelectMany(e => e.ForeignKeys))
@@ -51,7 +65,7 @@ namespace EntityFrameworkMigrator.QueryGenerators
                         foreignKey.FromColumn,
                         foreignKey.EfCoreFromColumnName,
                         foreignKey.Schema,
-                        foreignKey.FromTable.Name);
+                        foreignKey.FromTable.EFCoreName);
 
                     stringBuilder.Append(columnRenameQuery);
                     stringBuilder.Append(newline);
@@ -67,7 +81,7 @@ namespace EntityFrameworkMigrator.QueryGenerators
                 var indexRenameQuery = _queryGenerator.GenerateIndexRenameQuery(
                     index.Name,
                     index.Table.Schema,
-                    index.Table.Name,
+                    index.Table.EFCoreName,
                     index.EfCoreColumnName);
 
                 stringBuilder.Append(indexRenameQuery);
@@ -80,7 +94,10 @@ namespace EntityFrameworkMigrator.QueryGenerators
             foreach (var primaryKey in entityMap.EntityInformation.SelectMany(e => e.PrimaryKeys))
             {
                 var primaryKeyRenameQuery =
-                    _queryGenerator.GeneratePrimaryKeyRenameQuery(primaryKey.Name, primaryKey.Table.Schema, primaryKey.Table.Name);
+                    _queryGenerator.GeneratePrimaryKeyRenameQuery(
+                        primaryKey.Name, 
+                        primaryKey.Table.Schema, 
+                        primaryKey.Table.EFCoreName);
 
                 stringBuilder.Append(primaryKeyRenameQuery);
                 stringBuilder.Append(newline);
@@ -94,8 +111,8 @@ namespace EntityFrameworkMigrator.QueryGenerators
                 var indexRenameQuery = _queryGenerator.GenerateForeignKeyRenameQuery(
                     foreignKey.Schema,
                     foreignKey.Name,
-                    foreignKey.FromTable.Name,
-                    foreignKey.ToTable.Name,
+                    foreignKey.FromTable.EFCoreName,
+                    foreignKey.ToTable.EFCoreName,
                     foreignKey.EfCoreFromColumnName);
 
                 stringBuilder.Append(indexRenameQuery);

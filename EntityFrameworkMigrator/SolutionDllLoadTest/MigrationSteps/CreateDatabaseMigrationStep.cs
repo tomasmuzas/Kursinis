@@ -63,8 +63,6 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 throw new Exception();
             }
 
-            ISqlHelper helper = SqlQueryProviderLocator.ResolveSqlHelper(factory);
-
             IQueryGenerator generator = SqlQueryProviderLocator.ResolveQueryProvider(factory);
 
             var migrationScriptGenerator = new MigrationScriptGenerator(generator);
@@ -80,8 +78,9 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 try
                 {
                     DbContextInstance.Database.ExecuteSqlCommand(sql);
+                    //transaction.Commit();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     Console.WriteLine("ERROR: Generated script was not successfully tested against the database.");
                     throw new Exception();

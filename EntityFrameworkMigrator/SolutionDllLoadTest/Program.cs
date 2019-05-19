@@ -30,6 +30,9 @@ namespace EntityFrameworkMigrator
 
             Console.WriteLine("Generating migration SQL.");
             var migrationScript = createDatabaseMigrationStep.CreateMigrationSql(map);
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.Write(migrationScript);
+            Console.ResetColor();
             PrintSuccessMessage("Migration SQL generated successfully.");
 
             Console.WriteLine("Testing generated script on database. Transaction will be rolled back.");
