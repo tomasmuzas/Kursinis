@@ -20,6 +20,7 @@ namespace EntityFrameworkMigrator
 
             PrepareProjectFolderStep.CreateProjectCopy(args[0]);
             PrepareProjectFolderStep.CreateNewProjectFile(args[0]);
+            PrepareProjectFolderStep.AdjustEntityFrameworkNamespaces(args[0]);
 
             Console.Read();
             return 0;

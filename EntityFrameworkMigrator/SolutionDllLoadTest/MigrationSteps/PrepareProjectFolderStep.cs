@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace EntityFrameworkMigrator.MigrationSteps
@@ -39,21 +40,29 @@ namespace EntityFrameworkMigrator.MigrationSteps
             propertyGroup.AppendChild(outputType);
 
             var packages = GetPackages(projectPath);
-            if (packages.Any())
+            var itemGroup = xml.CreateElement("ItemGroup");
+
+            foreach (var package in packages)
             {
-                var itemGroup = xml.CreateElement("ItemGroup");
-                foreach (var package in packages)
+                // Don't add any Entity Framework nuget packages
+                if (package.Item1 != "EntityFramework" || package.Item1.StartsWith("EntityFramework."))
                 {
                     var packageElement = xml.CreateElement("PackageReference");
                     packageElement.SetAttribute("Include", package.Item1);
                     packageElement.SetAttribute("Version", package.Item2);
                     itemGroup.AppendChild(packageElement);
                 }
-
-                project.AppendChild(itemGroup);
             }
 
+            // "Install" Entity Framework Core
+            var EFCorePackage = xml.CreateElement("PackageReference");
+            EFCorePackage.SetAttribute("Include", "Microsoft.EntityFrameworkCore.SqlServer");
+            EFCorePackage.SetAttribute("Version", "2.1.8");
+            itemGroup.AppendChild(EFCorePackage);
+
             project.AppendChild(propertyGroup);
+            project.AppendChild(itemGroup);
+
             xml.AppendChild(project);
 
             xml.Save(Path.Combine(GetNewProjectPath(projectPath), projectName));
@@ -78,6 +87,25 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 .Single();
         }
 
+        public static void AdjustEntityFrameworkNamespaces(string projectPath)
+        {
+            var path = GetNewProjectPath(projectPath);
+            var directory = GetDirectory(path);
+            var files = GetFiles(directory);
+
+            foreach (var file in files)
+            {
+                var text = File.ReadAllText(file.FullName);
+                if (!Regex.IsMatch(text, @"System\.Data\.Entity"))
+                {
+                    continue;
+                }
+
+                var replacedText = text.Replace("System.Data.Entity", "Microsoft.EntityFrameworkCore");
+                File.WriteAllText(file.FullName, replacedText);
+            }
+        }
+
         private static IEnumerable<(string, string)> GetPackages(string projectPath)
         {
             var doc = new XmlDocument();
@@ -89,14 +117,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
 
         private static void CopyDirectory(string source, string destination, IEnumerable<string> ignoredFiles = null, IEnumerable<string> ignoredFolders = null)
         {
-            var currentDirectory = new DirectoryInfo(source);
-
-            if (!currentDirectory.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Project folder does not exist or could not be found: "
-                    + source);
-            }
+            var currentDirectory = GetDirectory(source);
 
             var directoriesInFolder = currentDirectory.GetDirectories().AsEnumerable();
             if (!Directory.Exists(destination))
@@ -104,7 +125,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 Directory.CreateDirectory(destination);
             }
 
-            var files = currentDirectory.GetFiles().AsEnumerable();
+            var files = GetFiles(currentDirectory);
 
             if (ignoredFiles != null)
             {
@@ -126,6 +147,32 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 var temppath = Path.Combine(destination, subdir.Name);
                 CopyDirectory(subdir.FullName, temppath);
             }
+        }
+
+        private static DirectoryInfo GetDirectory(string path)
+        {
+            var directory = new DirectoryInfo(path);
+
+            if (!directory.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Project folder does not exist or could not be found: "
+                    + path);
+            }
+
+            return directory;
+        }
+
+        private static IEnumerable<FileInfo> GetFiles(DirectoryInfo directory)
+        {
+            if (!directory.Exists)
+            {
+                throw new DirectoryNotFoundException(
+                    "Project folder does not exist or could not be found: "
+                    + directory.Name);
+            }
+
+            return directory.GetFiles().AsEnumerable();
         }
     }
 }
