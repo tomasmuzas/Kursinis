@@ -16,7 +16,8 @@ namespace EntityFrameworkMigrator
 
             var projectName = PrepareProjectFolderStep.GetProjectName(args[0]).Replace(".csproj", string.Empty);
 
-            CreateDatabaseMigrationStep.CreateMigrationSql(Path.Combine(args[0], "bin", "Debug", $"{projectName}.dll"));
+            var type = CreateDatabaseMigrationStep.CreateMigrationSql(Path.Combine(args[0], "bin", "Debug", $"{projectName}.dll"));
+            var dbContextName = type.Name;
 
             var prepareProjectStep = new PrepareProjectFolderStep(args[0]);
 
@@ -32,6 +33,11 @@ namespace EntityFrameworkMigrator
             prepareProjectStep.AdjustEntityFrameworkNamespaces();
             Console.WriteLine("Namespaces successfully replaced");
 
+            Console.WriteLine("Adapting Entity Framework DbContext to Core");
+            prepareProjectStep.SetupEntityFrameworkCoreDbContext(dbContextName);
+            Console.WriteLine("DbContext adapted.");
+
+            Console.WriteLine("Migration was successful! Press any key to quit...");
             Console.Read();
             return 0;
         }

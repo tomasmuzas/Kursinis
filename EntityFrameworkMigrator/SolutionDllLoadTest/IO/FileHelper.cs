@@ -17,7 +17,7 @@ namespace EntityFrameworkMigrator.IO
             DoActionInFolder(path, file =>
             {
                 var text = File.ReadAllText(file.FullName);
-                if (text.Contains(oldText))
+                if (!text.Contains(oldText))
                 {
                     return;
                 }
@@ -28,7 +28,7 @@ namespace EntityFrameworkMigrator.IO
         }
 
 
-        public void CopyDirectory(string source, string destination, IEnumerable<string> ignoredFiles = null, IEnumerable<string> ignoredFolders = null)
+        public static void CopyDirectory(string source, string destination, IEnumerable<string> ignoredFiles = null, IEnumerable<string> ignoredFolders = null)
         {
             var currentDirectory = GetDirectory(source);
 
@@ -85,7 +85,7 @@ namespace EntityFrameworkMigrator.IO
             }
         }
 
-        private static DirectoryInfo GetDirectory(string path)
+        public static DirectoryInfo GetDirectory(string path)
         {
             var directory = new DirectoryInfo(path);
 
@@ -99,7 +99,7 @@ namespace EntityFrameworkMigrator.IO
             return directory;
         }
 
-        private static IEnumerable<FileInfo> GetFiles(DirectoryInfo directory)
+        public static IEnumerable<FileInfo> GetFiles(DirectoryInfo directory)
         {
             if (!directory.Exists)
             {

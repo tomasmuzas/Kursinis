@@ -14,7 +14,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
 {
     public class CreateDatabaseMigrationStep
     {
-        public static void CreateMigrationSql(string assemblyPath)
+        public static TypeInfo CreateMigrationSql(string assemblyPath)
         {
             Console.WriteLine("Loading Assembly.");
             var assembly = Assembly.LoadFrom(assemblyPath);
@@ -66,6 +66,8 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 }
                 Console.WriteLine("Generated script was successfully tested against the database. Nothing was changed, transaction rolled back successfully.");
             }
+
+            return dbContextType;
         }
     }
 }

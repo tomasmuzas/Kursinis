@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml;
 using EntityFrameworkMigrator.IO;
 
@@ -10,7 +12,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
     {
         private string ProjectPath { get; }
 
-        private string NewProjectPath => ProjectPath + "_dotnet_core";
+        private string NewProjectPath => ProjectPath + "_Dotnet_Core";
 
         public PrepareProjectFolderStep(string projectPath)
         {
@@ -24,7 +26,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 ProjectPath, 
                 NewProjectPath, 
                 new []{"packages.config", $"{projectName}.csproj"}, 
-                new [] {"bin", "obj", "packages", "Properties"});
+                new [] {"bin", "obj", "packages", "Properties", "Migrations"});
         }
 
         public void CreateNewProjectFile()
@@ -77,10 +79,21 @@ namespace EntityFrameworkMigrator.MigrationSteps
             xml.Save(Path.Combine(NewProjectPath, projectName));
         }
 
-//        public static void InstallEntityFrameworkCore(string projectPath)
-//        {
-//            var newPath = GetNewProjectPath(projectPath);
-//        }
+        public void SetupEntityFrameworkCoreDbContext(string dbContextName)
+        {
+            var directory = FileHelper.GetDirectory(ProjectPath);
+            var files = FileHelper.GetFiles(directory);
+
+            var dbContextFile = files.Single(f => f.Name == dbContextName + ".cs");
+            var dbContextText = File.ReadAllText(Path.Combine(NewProjectPath, dbContextFile.Name));
+
+            var replaced = Regex.Replace(dbContextText,
+                @":(\s|\r|\n)*base\s*\(\""([\w=\s\\;\(\)]+)\""\)",
+                @": base(
+new DbContextOptionsBuilder().UseSqlServer(""$2"").Options)");
+
+            File.WriteAllText(Path.Combine(NewProjectPath, dbContextFile.Name), replaced);
+        }
 
         public static string GetProjectName(string projectPath)
         {
