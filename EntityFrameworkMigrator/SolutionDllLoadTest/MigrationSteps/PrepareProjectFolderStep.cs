@@ -1,26 +1,35 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Xml;
+using EntityFrameworkMigrator.IO;
 
 namespace EntityFrameworkMigrator.MigrationSteps
 {
     public class PrepareProjectFolderStep
     {
-        public static void CreateProjectCopy(string projectPath)
+        private string ProjectPath { get; }
+
+        private string NewProjectPath => ProjectPath + "_dotnet_core";
+
+        public PrepareProjectFolderStep(string projectPath)
         {
-            var projectName = GetProjectName(projectPath);
-            CopyDirectory(
-                projectPath, 
-                GetNewProjectPath(projectPath), 
+            ProjectPath = projectPath;
+        }
+
+        public void CreateProjectCopy()
+        {
+            var projectName = GetProjectName(ProjectPath);
+            FileHelper.CopyDirectory(
+                ProjectPath, 
+                NewProjectPath, 
                 new []{"packages.config", $"{projectName}.csproj"}, 
                 new [] {"bin", "obj", "packages", "Properties"});
         }
 
-        public static void CreateNewProjectFile(string projectPath)
+        public void CreateNewProjectFile()
         {
-            var projectName = GetProjectName(projectPath);
+            var projectName = GetProjectName(ProjectPath);
             var xml = new XmlDocument();
             
             // Project
@@ -39,7 +48,7 @@ namespace EntityFrameworkMigrator.MigrationSteps
             propertyGroup.AppendChild(targetFramework);
             propertyGroup.AppendChild(outputType);
 
-            var packages = GetPackages(projectPath);
+            var packages = GetProjectPackages();
             var itemGroup = xml.CreateElement("ItemGroup");
 
             foreach (var package in packages)
@@ -65,10 +74,13 @@ namespace EntityFrameworkMigrator.MigrationSteps
 
             xml.AppendChild(project);
 
-            xml.Save(Path.Combine(GetNewProjectPath(projectPath), projectName));
+            xml.Save(Path.Combine(NewProjectPath, projectName));
         }
 
-        private static string GetNewProjectPath(string projectPath) => projectPath + "_dotnet_core";
+//        public static void InstallEntityFrameworkCore(string projectPath)
+//        {
+//            var newPath = GetNewProjectPath(projectPath);
+//        }
 
         public static string GetProjectName(string projectPath)
         {
@@ -87,92 +99,22 @@ namespace EntityFrameworkMigrator.MigrationSteps
                 .Single();
         }
 
-        public static void AdjustEntityFrameworkNamespaces(string projectPath)
+        public void AdjustEntityFrameworkNamespaces()
         {
-            var path = GetNewProjectPath(projectPath);
-            var directory = GetDirectory(path);
-            var files = GetFiles(directory);
-
-            foreach (var file in files)
-            {
-                var text = File.ReadAllText(file.FullName);
-                if (!Regex.IsMatch(text, @"System\.Data\.Entity"))
-                {
-                    continue;
-                }
-
-                var replacedText = text.Replace("System.Data.Entity", "Microsoft.EntityFrameworkCore");
-                File.WriteAllText(file.FullName, replacedText);
-            }
+            FileHelper.ReplaceInFolder(
+                NewProjectPath, 
+                "System.Data.Entity", 
+                "Microsoft.EntityFrameworkCore", 
+                ignoreFolders: new []{"Migrations"});
         }
 
-        private static IEnumerable<(string, string)> GetPackages(string projectPath)
+        private IEnumerable<(string, string)> GetProjectPackages()
         {
             var doc = new XmlDocument();
-            doc.Load(projectPath + "\\packages.config");
+            doc.Load(ProjectPath + "\\packages.config");
             var nodes = doc.DocumentElement.SelectNodes("/packages/package");
             return nodes.Cast<XmlNode>()
                 .Select(n => (n.Attributes["id"].Value, n.Attributes["version"].Value));
-        }
-
-        private static void CopyDirectory(string source, string destination, IEnumerable<string> ignoredFiles = null, IEnumerable<string> ignoredFolders = null)
-        {
-            var currentDirectory = GetDirectory(source);
-
-            var directoriesInFolder = currentDirectory.GetDirectories().AsEnumerable();
-            if (!Directory.Exists(destination))
-            {
-                Directory.CreateDirectory(destination);
-            }
-
-            var files = GetFiles(currentDirectory);
-
-            if (ignoredFiles != null)
-            {
-                files = files.Where(f => !ignoredFiles.Contains(f.Name));
-            }
-
-            foreach (var file in files)
-            {
-                var temppath = Path.Combine(destination, file.Name);
-                file.CopyTo(temppath, false);
-            }
-
-            if (ignoredFolders != null)
-            {
-                directoriesInFolder = directoriesInFolder.Where(f => !ignoredFolders.Contains(f.Name));
-            }
-            foreach (DirectoryInfo subdir in directoriesInFolder)
-            {
-                var temppath = Path.Combine(destination, subdir.Name);
-                CopyDirectory(subdir.FullName, temppath);
-            }
-        }
-
-        private static DirectoryInfo GetDirectory(string path)
-        {
-            var directory = new DirectoryInfo(path);
-
-            if (!directory.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Project folder does not exist or could not be found: "
-                    + path);
-            }
-
-            return directory;
-        }
-
-        private static IEnumerable<FileInfo> GetFiles(DirectoryInfo directory)
-        {
-            if (!directory.Exists)
-            {
-                throw new DirectoryNotFoundException(
-                    "Project folder does not exist or could not be found: "
-                    + directory.Name);
-            }
-
-            return directory.GetFiles().AsEnumerable();
         }
     }
 }
